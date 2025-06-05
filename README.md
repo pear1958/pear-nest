@@ -1,3 +1,13 @@
+### 开发时使用的node版本
+
+- v22.16.0
+
+### 启动项目
+
+- npm run start:dev
+
+- 快速生成模块 nest g resource dir
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
