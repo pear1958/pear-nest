@@ -7,14 +7,33 @@ import { UpdateUserDto } from './dto/update-user.dto'
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Post('login')
+  login(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto)
+  }
+
+  @Post('logout')
+  logout() {
+    return {
+      code: 200,
+      msg: 'ok',
+      data: true
+    }
+  }
+
   @Get('menu')
   getMenuList() {
     return this.userService.findAll()
   }
 
-  @Post('login')
-  login(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto)
+  @Get('info')
+  getUserInfo() {
+    return this.userService.getUserInfo()
+  }
+
+  @Get('button')
+  getAuthButton() {
+    return this.userService.getAuthButton()
   }
 
   @Get(':id')
