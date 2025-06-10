@@ -5,7 +5,7 @@ import { AppService } from './app.service'
 import { UserModule } from './modules/user/user.module'
 import { DeviceModule } from './modules/device/device.module'
 import { SystemModule } from './modules/system/system.module'
-import { TransformInterceptor } from './common/interceptor/transform.interceptor'
+import { TransformInterceptor } from './common/interceptor/transform'
 
 @Module({
   imports: [UserModule, DeviceModule, SystemModule],

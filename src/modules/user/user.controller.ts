@@ -14,11 +14,7 @@ export class UserController {
 
   @Post('logout')
   logout() {
-    return {
-      code: 200,
-      msg: 'ok',
-      data: true
-    }
+    return true
   }
 
   @Get('menu')

@@ -7,44 +7,28 @@ import { menuList } from 'src/mock/menuList'
 export class UserService {
   create(createUserDto: CreateUserDto) {
     console.log('createUserDto', createUserDto)
-    return {
-      code: 200,
-      msg: 'ok',
-      data: true
-    }
+    return true
   }
 
   findAll() {
-    return {
-      code: 200,
-      msg: 'ok',
-      data: menuList
-    }
+    return menuList
   }
 
   getUserInfo() {
     return {
-      code: 200,
-      msg: 'ok',
-      data: {
-        userName: 'Admin',
-        mobile: '18270993095',
-        apartment: 'IT服务部',
-        avatar: 'xxx',
-        salary: 4500
-      }
+      userName: 'Admin',
+      mobile: '18270993095',
+      apartment: 'IT服务部',
+      avatar: 'xxx',
+      salary: 4500
     }
   }
 
   getAuthButton() {
     return {
-      code: 200,
-      msg: 'ok',
-      data: {
-        home: ['test1', 'add', 'delete', 'edit', 'query', '一键导出', '一键删除'],
-        jsonForm: ['设备列表1', '设备列表2'],
-        jsonTable: ['add', 'delete', 'query', 'salary']
-      }
+      home: ['test1', 'add', 'delete', 'edit', 'query', '一键导出', '一键删除'],
+      jsonForm: ['设备列表1', '设备列表2'],
+      jsonTable: ['add', 'delete', 'query', 'salary']
     }
   }
 

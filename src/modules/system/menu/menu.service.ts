@@ -12,19 +12,15 @@ export const getMockMenuData = params => {
 
 @Injectable()
 export class MenuService {
-  create(createMenuDto: CreateMenuDto) {
-    return 'This action adds a new menu'
-  }
-
   findAll(params: Recordable) {
     return {
-      code: 200,
-      msg: 'ok',
-      data: {
-        list: getMockMenuData(params),
-        total: 10
-      }
+      list: getMockMenuData(params),
+      total: 10
     }
+  }
+
+  create(createMenuDto: CreateMenuDto) {
+    return 'This action adds a new menu'
   }
 
   findOne(id: number) {

@@ -4,25 +4,21 @@ import { UpdateDeviceDto } from './dto/update-device.dto'
 
 @Injectable()
 export class DeviceService {
-  create(createDeviceDto: CreateDeviceDto) {
-    return 'This action adds a new device'
+  findAll() {
+    return [
+      {
+        name: '111',
+        type: 'aaa'
+      },
+      {
+        name: '222',
+        type: 'bbb'
+      }
+    ]
   }
 
-  findAll() {
-    return {
-      code: 200,
-      msg: 'ok',
-      data: [
-        {
-          name: '111',
-          type: 'aaa'
-        },
-        {
-          name: '222',
-          type: 'bbb'
-        }
-      ]
-    }
+  create(createDeviceDto: CreateDeviceDto) {
+    return 'This action adds a new device'
   }
 
   findOne(id: number) {
