@@ -8,6 +8,10 @@
 
 - 快速生成模块 nest g resource dir
 
+### 接口文档
+
+- 推荐使用 swagger -> apifox / knife4j
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
