@@ -10,9 +10,11 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService<ConfigKeyPaths>)
 
-  const printSwaggerLog = setupSwagger(app, configService)
+  const { port, prefix } = configService.get<AppConfig>('app')!
 
-  const { port } = configService.get<AppConfig>('app')!
+  app.setGlobalPrefix(prefix)
+
+  const printSwaggerLog = setupSwagger(app, configService)
 
   await app.listen(port, '0.0.0.0', async () => {
     printSwaggerLog?.()
