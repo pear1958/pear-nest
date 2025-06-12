@@ -12,7 +12,9 @@ async function bootstrap() {
 
   const printSwaggerLog = setupSwagger(app, configService)
 
-  await app.listen(envNumber(process.env.APP_PORT as string), '0.0.0.0', async () => {
+  const PORT = envNumber('APP_PORT')
+
+  await app.listen(PORT, '0.0.0.0', async () => {
     printSwaggerLog?.()
   })
 }
