@@ -6,6 +6,7 @@ import { SwaggerConfig } from './config/swagger'
 import { env } from './utils/env'
 import { AppConfig } from './config/app'
 import { HttpResponse, Tree } from './common/model/response'
+import { API_SECURITY_AUTH } from './common/decorators/swagger'
 
 export function setupSwagger(app: INestApplication, configService: ConfigService<ConfigKeyPaths>) {
   const { enable, serverUrl, path } = configService.get<SwaggerConfig>('swagger')!
@@ -17,6 +18,13 @@ export function setupSwagger(app: INestApplication, configService: ConfigService
     .setDescription(`${name}接口文档`)
     .setVersion(env('SWAGGER_VERSION'))
     .addServer(`${serverUrl}/${prefix}`, 'Base URL')
+    // 必须输入 token 才能访问
+    // .addSecurity(API_SECURITY_AUTH, {
+    //   description: '请输入令牌 ( Enter the token )',
+    //   type: 'http',
+    //   scheme: 'bearer',
+    //   bearerFormat: 'JWT'
+    // })
     .build()
 
   const documentFactory = () =>

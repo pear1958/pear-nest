@@ -2,7 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { DeviceService } from './device.service'
 import { CreateDeviceDto } from './dto/create-device.dto'
 import { UpdateDeviceDto } from './dto/update-device.dto'
+import { ApiSecurityAuth } from '@/common/decorators/swagger'
 
+@ApiSecurityAuth()
 @Controller('device')
 export class DeviceController {
   constructor(private readonly deviceService: DeviceService) {}
