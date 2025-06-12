@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import { AppModule } from './app.module'
 import { setupSwagger } from './swagger'
 import { ConfigKeyPaths } from './config'
-import { envNumber } from './utils/env'
+import { AppConfig } from './config/app'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -12,9 +12,9 @@ async function bootstrap() {
 
   const printSwaggerLog = setupSwagger(app, configService)
 
-  const PORT = envNumber('APP_PORT')
+  const { port } = configService.get<AppConfig>('app')!
 
-  await app.listen(PORT, '0.0.0.0', async () => {
+  await app.listen(port, '0.0.0.0', async () => {
     printSwaggerLog?.()
   })
 }
