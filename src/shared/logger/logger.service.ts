@@ -1,4 +1,6 @@
-import { ConsoleLogger, Injectable } from '@nestjs/common'
+import { ConfigKeyPaths } from '@/config'
+import { ConsoleLogger, ConsoleLoggerOptions, Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import type { Logger } from 'winston'
 
 import 'winston-daily-rotate-file'
@@ -12,8 +14,18 @@ export enum LogLevel {
 }
 
 @Injectable()
+// 扩展内置Logger
 export class LoggerService extends ConsoleLogger {
   private winstonLogger: Logger
+
+  constructor(
+    context: string,
+    options: ConsoleLoggerOptions,
+    private configService: ConfigService<ConfigKeyPaths>
+  ) {
+    super(context, options)
+    this.initWinston()
+  }
 
   protected initWinston(): void {
     // xxxxxxxxx
