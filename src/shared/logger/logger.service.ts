@@ -1,8 +1,7 @@
 import { ConfigKeyPaths } from '@/config'
 import { ConsoleLogger, ConsoleLoggerOptions, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import type { Logger } from 'winston'
-
+import { config, createLogger, format, transports, type Logger } from 'winston'
 import 'winston-daily-rotate-file'
 
 export enum LogLevel {
@@ -18,6 +17,7 @@ export enum LogLevel {
 export class LoggerService extends ConsoleLogger {
   private winstonLogger: Logger
 
+  // context 和 options 这两个参数是在模块注册 LoggerService 时通过工厂函数手动提供的
   constructor(
     context: string,
     options: ConsoleLoggerOptions,
@@ -27,8 +27,37 @@ export class LoggerService extends ConsoleLogger {
     this.initWinston()
   }
 
+  protected get level(): LogLevel {
+    return this.configService.get('app.logger.level') as LogLevel
+  }
+
+  protected get maxFiles(): number {
+    return this.configService.get('app.logger.maxFiles')!
+  }
+
   protected initWinston(): void {
-    // xxxxxxxxx
+    this.winstonLogger = createLogger({
+      levels: config.npm.levels,
+      format: format.combine(format.errors({ stack: true }), format.timestamp(), format.json()),
+      transports: [
+        new transports.DailyRotateFile({
+          level: this.level,
+          filename: 'logs/app.%DATE%.log',
+          datePattern: 'YYYY-MM-DD',
+          maxFiles: this.maxFiles,
+          format: format.combine(format.timestamp(), format.json()),
+          auditFile: 'logs/.audit/app.json'
+        }),
+        new transports.DailyRotateFile({
+          level: LogLevel.ERROR,
+          filename: 'logs/app-error.%DATE%.log',
+          datePattern: 'YYYY-MM-DD',
+          maxFiles: this.maxFiles,
+          format: format.combine(format.timestamp(), format.json()),
+          auditFile: 'logs/.audit/app-error.json'
+        })
+      ]
+    })
   }
 
   verbose(message: any, context?: string): void {

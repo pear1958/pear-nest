@@ -7,7 +7,11 @@ export const appConfig = registerAs(app, () => ({
   name: env('APP_NAME'),
   port: envNumber('APP_PORT'),
   baseUrl: env('APP_BASE_URL'),
-  prefix: env('APP_PREFIX')
+  prefix: env('APP_PREFIX'),
+  logger: {
+    level: env('LOGGER_LEVEL'),
+    maxFiles: envNumber('LOGGER_MAX_FILES')
+  }
 }))
 
 export type AppConfig = ConfigType<typeof appConfig>

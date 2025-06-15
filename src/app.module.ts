@@ -6,6 +6,7 @@ import { AppService } from './app.service'
 import { TransformInterceptor } from './common/interceptor/transform'
 import { DeviceModule, SystemModule, UserModule } from './modules'
 import config from './config'
+import { SharedModule } from './shared/shared.module'
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import config from './config'
       // 注入自定义配置
       load: [...Object.values(config)]
     }),
+    SharedModule,
     UserModule,
     DeviceModule,
     SystemModule
