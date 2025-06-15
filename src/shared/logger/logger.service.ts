@@ -78,6 +78,7 @@ export class LoggerService extends ConsoleLogger {
     this.winstonLogger.log(LogLevel.DEBUG, message, { context })
   }
 
+  // 对应 winston 的 info 级别日志
   log(message: any, context?: string): void {
     super.log.apply(this, [message, context])
     this.winstonLogger.log(LogLevel.INFO, message, { context })
