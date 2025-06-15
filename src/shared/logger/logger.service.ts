@@ -40,7 +40,6 @@ export class LoggerService extends ConsoleLogger {
       // 日志级别决定了哪些日志会被记录
       levels: config.npm.levels,
       // 记录错误堆栈信息 - 添加时间戳 - 以 JSON 格式输出
-      // 为所有传输器设置默认的基础格式: 所有传输器都会继承这些格式设置, 除非传输器自己覆盖了该配置
       format: format.combine(format.errors({ stack: true }), format.timestamp(), format.json()),
       transports: [
         // 常规日志文件
