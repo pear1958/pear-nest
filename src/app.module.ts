@@ -7,6 +7,7 @@ import { TransformInterceptor } from './common/interceptor/transform'
 import { DeviceModule, SystemModule, UserModule } from './modules'
 import config from './config'
 import { SharedModule } from './shared/shared.module'
+import { DatabaseModule } from './shared/database/database.module'
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SharedModule } from './shared/shared.module'
       load: [...Object.values(config)]
     }),
     SharedModule,
+    DatabaseModule,
     UserModule,
     DeviceModule,
     SystemModule

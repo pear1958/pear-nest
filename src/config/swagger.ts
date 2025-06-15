@@ -1,9 +1,9 @@
 import { registerAs, type ConfigType } from '@nestjs/config'
 import { env, envBoolean } from '@/utils/env'
 
-export const swagger = 'swagger'
+export const swaggerRegToken = 'swagger'
 
-export const swaggerConfig = registerAs(swagger, () => ({
+export const swaggerConfig = registerAs(swaggerRegToken, () => ({
   enable: envBoolean('SWAGGER_ENABLE'),
   serverUrl: env('APP_BASE_URL'),
   path: env('SWAGGER_PATH')
