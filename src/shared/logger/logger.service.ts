@@ -38,6 +38,7 @@ export class LoggerService extends ConsoleLogger {
   protected initWinston(): void {
     this.winstonLogger = createLogger({
       // 日志级别决定了哪些日志会被记录
+      // winston中: error > warn > info > verbose > debug > silly
       levels: config.npm.levels,
       // 记录错误堆栈信息 - 添加时间戳 - 以 JSON 格式输出
       format: format.combine(format.errors({ stack: true }), format.timestamp(), format.json()),
@@ -58,7 +59,7 @@ export class LoggerService extends ConsoleLogger {
           datePattern: 'YYYY-MM-DD',
           filename: 'logs/app-error.%DATE%.log',
           maxFiles: this.maxFiles,
-          // format: format.combine(format.timestamp(), format.json()),
+          format: format.combine(format.timestamp(), format.json()),
           auditFile: 'logs/.audit/app-error.json'
         })
       ]
