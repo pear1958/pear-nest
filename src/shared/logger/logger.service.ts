@@ -42,16 +42,16 @@ export class LoggerService extends ConsoleLogger {
       transports: [
         new transports.DailyRotateFile({
           level: this.level,
-          filename: 'logs/app.%DATE%.log',
           datePattern: 'YYYY-MM-DD',
+          filename: 'logs/app.%DATE%.log',
           maxFiles: this.maxFiles,
           format: format.combine(format.timestamp(), format.json()),
           auditFile: 'logs/.audit/app.json'
         }),
         new transports.DailyRotateFile({
           level: LogLevel.ERROR,
-          filename: 'logs/app-error.%DATE%.log',
           datePattern: 'YYYY-MM-DD',
+          filename: 'logs/app-error.%DATE%.log',
           maxFiles: this.maxFiles,
           format: format.combine(format.timestamp(), format.json()),
           auditFile: 'logs/.audit/app-error.json'
