@@ -6,6 +6,9 @@ import { DatabaseConfig } from '@/config/database'
 import { env } from '@/utils/env'
 import { ConfigKeyPaths } from '@/config'
 import { CustomORMLogger } from './custom-orm-logger'
+import { UniqueConstraint } from './constraints/unique'
+
+const providers = [UniqueConstraint]
 
 @Module({
   imports: [
@@ -37,7 +40,8 @@ import { CustomORMLogger } from './custom-orm-logger'
       }
     })
   ],
-  providers: [],
-  exports: []
+  // 仅在当前模块内可见
+  providers,
+  exports: providers
 })
 export class DatabaseModule {}

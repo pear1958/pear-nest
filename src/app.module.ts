@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { APP_INTERCEPTOR } from '@nestjs/core'
 import { ConfigModule } from '@nestjs/config'
+import { ClsModule } from 'nestjs-cls'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { TransformInterceptor } from './common/interceptor/transform'
@@ -20,6 +21,22 @@ import { DatabaseModule } from './shared/database/database.module'
       expandVariables: true,
       // 注入自定义配置
       load: [...Object.values(config)]
+    }),
+    // 启用 CLS 上下文
+    ClsModule.forRoot({
+      global: true,
+      // https://github.com/Papooch/nestjs-cls/issues/92
+      interceptor: {
+        mount: true,
+        setup: (cls, context) => {
+          const req = context.switchToHttp().getRequest()
+          if (req.params?.id && req.body) {
+            // 供自定义参数验证器(UniqueConstraint)使用
+            const id = req.params.id || req.body.id
+            cls.set('operateId', Number.parseInt(id))
+          }
+        }
+      }
     }),
     SharedModule,
     DatabaseModule,
