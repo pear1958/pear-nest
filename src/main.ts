@@ -1,6 +1,12 @@
 import { NestFactory } from '@nestjs/core'
 import { ConfigService } from '@nestjs/config'
-import { HttpStatus, Logger, UnprocessableEntityException, ValidationPipe } from '@nestjs/common'
+import {
+  HttpStatus,
+  Logger,
+  UnprocessableEntityException,
+  ValidationError,
+  ValidationPipe
+} from '@nestjs/common'
 import { AppModule } from './app.module'
 import { setupSwagger } from './swagger'
 import { ConfigKeyPaths } from './config'
@@ -44,14 +50,21 @@ async function bootstrap() {
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
       // 遇到第一个验证错误时立即停止验证, 不再继续检查其他约束条件, 这可以提高性能
       stopAtFirstError: true,
-      exceptionFactory: errors =>
-        new UnprocessableEntityException(
-          errors.map(e => {
-            const rule = Object.keys(e.constraints!)[0]
-            const msg = e.constraints![rule]
-            return msg
-          })[0]
-        )
+      // 只返回第一个错误, 让客户端一次只处理一个问题
+      // { statusCode: 422, message: ['xxx', 'xxx'], error: "Unprocessable Entity" } -> message: 'xxx'
+      // errors: 一个字段违反多个规则 || 多个字段违反规则
+      exceptionFactory: errors => {
+        const msgList = errors.map((item: ValidationError) => {
+          // 找到第一个验证规则名称
+          // constraints: { isNotEmpty: "should not be empty" }
+          // constraints 默认只有一个属性, 多次违法规则会被放到多个Error中
+          const rule = Object.keys(item.constraints!)[0]
+          // 获取该规则对应的错误消息
+          return item.constraints![rule]
+        })
+        const msg = msgList[0] // 只取第一个错误消息
+        return new UnprocessableEntityException(msg)
+      }
     })
   )
 
