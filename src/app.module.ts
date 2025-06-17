@@ -11,6 +11,7 @@ import { DatabaseModule } from './shared/database/database.module'
 
 @Module({
   imports: [
+    // 在 NestJS 应用启动后才会加载环境变量
     ConfigModule.forRoot({
       isGlobal: true,
       // 如果在多个文件中查找一个变量, 则第一个优先

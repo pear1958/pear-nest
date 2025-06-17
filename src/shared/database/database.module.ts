@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { DataSource, LoggerOptions } from 'typeorm'
+import { DataSource } from 'typeorm'
 import { DatabaseConfig } from '@/config/database'
 import { env } from '@/utils/env'
 import { ConfigKeyPaths } from '@/config'
@@ -14,17 +14,11 @@ import { ConfigKeyPaths } from '@/config'
       // 动态生成 TypeORM 的连接配置对象
       // 需要从环境变量、配置文件或其他服务中获取数据库配置时使用
       useFactory: (configService: ConfigService<ConfigKeyPaths>) => {
-        let dbLogging = env('DB_LOGGING') as LoggerOptions
-        // 解析成 js 数组 ['error']
-        dbLogging = JSON.parse(dbLogging as string)
-
-        const config = configService.get<DatabaseConfig>('database')
-
-        // console.log('process.env', process.env)
-        console.log('config', config)
+        const dbLogging = JSON.parse(env('DB_LOGGING'))
+        const dbConfig = configService.get<DatabaseConfig>('database')
 
         return {
-          ...config,
+          ...dbConfig,
           // 自动加载实体文件
           // TypeORM 会自动扫描项目中通过 @Entity() 装饰器定义的实体类, 无需手动在 entities 数组中逐个列出
           autoLoadEntities: true,
