@@ -32,6 +32,7 @@ async function bootstrap() {
   }
 
   app.useGlobalPipes(
+    // 验证管道的作用是对进入应用程序的 http 请求数据进行验证和转换, 确保数据符合预期的格式和规则
     new ValidationPipe({
       transform: true,
       // 根据 dto 中定义的类型信息, 自动转换请求数据的类型, 即使没有显式使用 @Type() 装饰器
@@ -39,7 +40,7 @@ async function bootstrap() {
       // 只有在 dto 中使用 class-validator 装饰器 如 @IsString()、@IsNumber() 等 明确标记的属性才会被保留
       // 未标记的属性会被自动过滤掉, 不会进入应用程序
       whitelist: true,
-      // 当验证失败时, 返回 HTTP 422 状态码(不可处理的实体), 而不是默认的 400 错误
+      // 当验证失败时, 返回 http 422 状态码(不可处理的实体), 而不是默认的 400 错误
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
       // 遇到第一个验证错误时立即停止验证, 不再继续检查其他约束条件, 这可以提高性能
       stopAtFirstError: true,
