@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { APP_INTERCEPTOR } from '@nestjs/core'
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'
 import { ConfigModule } from '@nestjs/config'
 import { ClsModule } from 'nestjs-cls'
 import { AppController } from './app.controller'
@@ -9,6 +9,7 @@ import { DeviceModule, SystemModule, UserModule } from './modules'
 import config from './config'
 import { SharedModule } from './shared/shared.module'
 import { DatabaseModule } from './shared/database/database.module'
+import { AllExceptionFilter } from './common/filters/all-exception'
 
 @Module({
   imports: [
@@ -45,7 +46,11 @@ import { DatabaseModule } from './shared/database/database.module'
     SystemModule
   ],
   controllers: [AppController],
-  // 使用 NestJS 的内置令牌 APP_INTERCEPTOR 将 TransformInterceptor 注册为 全局拦截器
-  providers: [AppService, { provide: APP_INTERCEPTOR, useClass: TransformInterceptor }]
+  providers: [
+    AppService,
+    { provide: APP_FILTER, useClass: AllExceptionFilter },
+    // 使用 NestJS 的内置令牌 APP_INTERCEPTOR 将 TransformInterceptor 注册为 全局拦截器
+    { provide: APP_INTERCEPTOR, useClass: TransformInterceptor }
+  ]
 })
 export class AppModule {}
