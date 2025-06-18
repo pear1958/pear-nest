@@ -31,11 +31,12 @@ export class AllExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<FastifyRequest>()
     const response = ctx.getResponse<FastifyReply>()
     const status = this.getStatus(exception)
-    let message = this.getErrorMessage(exception)
     const url = request.raw.url!
+    const isBusinessException = exception instanceof BusinessException
+    let message = this.getErrorMessage(exception)
 
-    // 系统内部错误时
-    if (status === HttpStatus.INTERNAL_SERVER_ERROR && !(exception instanceof BusinessException)) {
+    // 记录日志
+    if (status === HttpStatus.INTERNAL_SERVER_ERROR && !isBusinessException) {
       // 对象类型可以优化 to-do
       Logger.error(exception, undefined, 'Catch')
       // 生产环境下隐藏错误信息
@@ -45,7 +46,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       this.logger.warn(`错误信息：(${status}) ${message} Path: ${decodeURI(url)}`)
     }
 
-    const code = exception instanceof BusinessException ? exception.getErrorCode() : status
+    const code = !isBusinessException ? status : exception.getErrorCode()
 
     // 返回基础响应结果
     const result: BaseResponse = {
@@ -57,13 +58,15 @@ export class AllExceptionFilter implements ExceptionFilter {
     response.status(status).send(result)
   }
 
+  // 全局捕获 Node.js 应用中未被处理的异常, 防止这些异常导致应用崩溃
   registerCatchAllExceptionHook() {
-    process.on('unhandledRejection', reason => {
-      console.error('unhandledRejection: ', reason)
-    })
-
+    // 当同步代码抛出错误, 未被 try-catch 捕获时
     process.on('uncaughtException', err => {
       console.error('uncaughtException: ', err)
+    })
+    // 当 Promise 被拒绝, 但未 catch 处理时
+    process.on('unhandledRejection', reason => {
+      console.error('unhandledRejection: ', reason)
     })
   }
 
