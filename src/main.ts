@@ -22,8 +22,8 @@ import { fastifyApp } from './common/adapters/fastify'
 async function bootstrap() {
   // 使用 fastify 服务器
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, fastifyApp, {
-    bufferLogs: true,
-    snapshot: true
+    bufferLogs: true, // 缓冲应用启动期间的日志(框架内部生成的日志), 直到应用完全初始化后再统一输出
+    snapshot: true // 启用 NestJS 的应用快照功能, 用于提升启动性能
   })
 
   const configService = app.get(ConfigService<ConfigKeyPaths>)
