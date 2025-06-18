@@ -6,8 +6,8 @@ import {
   HttpStatus,
   Logger
 } from '@nestjs/common'
-import { FastifyReply, FastifyRequest } from 'fastify'
 import { QueryFailedError } from 'typeorm'
+import { FastifyReply, FastifyRequest } from 'fastify'
 import { BusinessException } from '../exception/business'
 import { isDev } from '@/utils/env'
 import { ErrorEnum } from '../constant/error-code'
@@ -36,10 +36,12 @@ export class AllExceptionFilter implements ExceptionFilter {
 
     // 系统内部错误时
     if (status === HttpStatus.INTERNAL_SERVER_ERROR && !(exception instanceof BusinessException)) {
+      // 对象类型可以优化 to-do
       Logger.error(exception, undefined, 'Catch')
       // 生产环境下隐藏错误信息
       if (!isDev) message = ErrorEnum.SERVER_ERROR?.split(':')[1]
     } else {
+      // 自动使用类名作为上下文
       this.logger.warn(`错误信息：(${status}) ${message} Path: ${decodeURI(url)}`)
     }
 
