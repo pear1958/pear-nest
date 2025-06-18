@@ -45,6 +45,7 @@ import { DatabaseModule } from './shared/database/database.module'
     SystemModule
   ],
   controllers: [AppController],
+  // 使用 NestJS 的内置令牌 APP_INTERCEPTOR 将 TransformInterceptor 注册为 全局拦截器
   providers: [AppService, { provide: APP_INTERCEPTOR, useClass: TransformInterceptor }]
 })
 export class AppModule {}

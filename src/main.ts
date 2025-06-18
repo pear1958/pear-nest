@@ -7,6 +7,7 @@ import {
   ValidationError,
   ValidationPipe
 } from '@nestjs/common'
+import { useContainer } from 'class-validator'
 import { AppModule } from './app.module'
 import { setupSwagger } from './swagger'
 import { ConfigKeyPaths } from './config'
@@ -22,6 +23,10 @@ async function bootstrap() {
 
   const { port, prefix } = configService.get<AppConfig>('app')!
 
+  // class-validator 的 DTO 类中注入 nest 容器的依赖 (用于自定义验证器)
+  // 当 class-validator 无法从 NestJS 容器解析依赖时, 回退到自身的容器, 避免抛出错误
+  useContainer(app.select(AppModule), { fallbackOnErrors: true })
+
   // 允许跨域
   app.enableCors({
     origin: '*',
@@ -31,6 +36,9 @@ async function bootstrap() {
   })
 
   app.setGlobalPrefix(prefix)
+
+  // 启用优雅关闭
+  !isDev && app.enableShutdownHooks()
 
   // 本地环境开启 接口处理 日志打印
   if (isDev) {
