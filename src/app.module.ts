@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common'
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'
 import { ConfigModule } from '@nestjs/config'
 import { ClsModule } from 'nestjs-cls'
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
 import { TransformInterceptor } from './common/interceptor/transform'
 import { DeviceModule, SystemModule, UserModule } from './modules'
 import config from './config'
@@ -45,9 +43,8 @@ import { AllExceptionFilter } from './common/filters/all-exception'
     DeviceModule,
     SystemModule
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [
-    AppService,
     { provide: APP_FILTER, useClass: AllExceptionFilter },
     // 使用 NestJS 的内置令牌 APP_INTERCEPTOR 将 TransformInterceptor 注册为 全局拦截器
     { provide: APP_INTERCEPTOR, useClass: TransformInterceptor }
