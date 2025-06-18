@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common'
 import { QueryFailedError } from 'typeorm'
 import { FastifyReply, FastifyRequest } from 'fastify'
+// import { Request, Response } from 'express'
 import { BusinessException } from '../exception/business'
 import { isDev } from '@/utils/env'
 import { ErrorEnum } from '../constant/error-code'
@@ -32,8 +33,8 @@ export class AllExceptionFilter implements ExceptionFilter {
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
-    const request = ctx.getRequest<FastifyRequest>()
-    const response = ctx.getResponse<FastifyReply>()
+    const request = ctx.getRequest<FastifyRequest>() // Request
+    const response = ctx.getResponse<FastifyReply>() // Response
     const status = this.getStatus(exception)
     const url = request.raw.url!
     const isBusinessException = exception instanceof BusinessException

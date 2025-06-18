@@ -7,6 +7,8 @@ import {
   ValidationError,
   ValidationPipe
 } from '@nestjs/common'
+import { NestFastifyApplication } from '@nestjs/platform-fastify'
+import path from 'node:path'
 import { useContainer } from 'class-validator'
 import { AppModule } from './app.module'
 import { setupSwagger } from './swagger'
@@ -15,9 +17,14 @@ import { AppConfig } from './config/app'
 import { LoggingInterceptor } from './common/interceptor/logging'
 import { isDev } from './utils/env'
 import { LoggerService } from './shared/logger/logger.service'
+import { fastifyApp } from './common/adapters/fastify'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  // 使用 fastify 服务器
+  const app = await NestFactory.create<NestFastifyApplication>(AppModule, fastifyApp, {
+    bufferLogs: true,
+    snapshot: true
+  })
 
   const configService = app.get(ConfigService<ConfigKeyPaths>)
 
@@ -36,6 +43,7 @@ async function bootstrap() {
   })
 
   app.setGlobalPrefix(prefix)
+  app.useStaticAssets({ root: path.join(__dirname, '..', 'public') })
 
   // 启用优雅关闭
   !isDev && app.enableShutdownHooks()
@@ -78,6 +86,7 @@ async function bootstrap() {
 
   const printSwaggerLog = setupSwagger(app, configService)
 
+  // Fastify 需显式指定 host
   await app.listen(port, '0.0.0.0', async () => {
     app.useLogger(app.get(LoggerService))
     printSwaggerLog?.()
