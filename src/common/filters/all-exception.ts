@@ -18,6 +18,10 @@ interface CustomError {
   readonly message?: string
 }
 
+/**
+ * 只有成功才会走到 接口拦截器 全局统一返回数据格式
+ * 发生异常会走到这个过滤器
+ */
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionFilter.name)
@@ -46,7 +50,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       this.logger.warn(`错误信息：(${status}) ${message} Path: ${decodeURI(url)}`)
     }
 
-    const code = !isBusinessException ? status : exception.getErrorCode()
+    const code = isBusinessException ? exception.getErrorCode() : status
 
     // 返回基础响应结果
     const result: BaseResponse = {
