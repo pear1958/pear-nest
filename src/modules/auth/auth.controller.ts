@@ -3,6 +3,8 @@ import { ApiOperation } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
 import { CreateAuthDto } from './dto/create-auth.dto'
 import { UpdateAuthDto } from './dto/update-auth.dto'
+import { ApiResult } from '@/common/decorators/api-result'
+import { LoginToken } from '@/common/model/auth'
 
 @Controller('auth')
 export class AuthController {
@@ -10,6 +12,7 @@ export class AuthController {
 
   @Post('login')
   @ApiOperation({ summary: '登录' })
+  @ApiResult({ type: LoginToken })
   create(@Body() createAuthDto: CreateAuthDto) {
     return this.authService.create(createAuthDto)
   }
@@ -20,6 +23,7 @@ export class AuthController {
   }
 
   @Get(':id')
+  @ApiOperation({ description: '这是一段测试文案' })
   findOne(@Param('id') id: string) {
     return this.authService.findOne(+id)
   }
