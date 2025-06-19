@@ -9,15 +9,18 @@ import {
 } from '@nestjs/common'
 import { NestFastifyApplication } from '@nestjs/platform-fastify'
 import path from 'node:path'
+import cluster from 'node:cluster'
 import { useContainer } from 'class-validator'
 import { AppModule } from './app.module'
 import { setupSwagger } from './swagger'
 import { ConfigKeyPaths } from './config'
 import { AppConfig } from './config/app'
 import { LoggingInterceptor } from './common/interceptor/logging'
-import { isDev } from './utils/env'
+import { isDev, isMainProcess } from './utils/env'
 import { LoggerService } from './shared/logger/logger.service'
 import { fastifyApp } from './common/adapters/fastify'
+
+declare const module: any
 
 async function bootstrap() {
   // 使用 fastify 服务器
@@ -84,17 +87,30 @@ async function bootstrap() {
     })
   )
 
-  const printSwaggerLog = setupSwagger(app, configService)
+  const printSwaggerInfo = setupSwagger(app, configService)
 
   // Fastify 需显式指定 host
   await app.listen(port, '0.0.0.0', async () => {
     app.useLogger(app.get(LoggerService))
-    printSwaggerLog?.()
 
-    const url = await app.getUrl()
+    // 防止日志重复, 避免 Swagger 重复初始化
+    if (!isMainProcess) return
+
+    printSwaggerInfo?.()
+
     const logger = new Logger('NestApplication')
-    logger.log(`Server running on ${url}`)
+    // 主进程(Primary) - 工作进程(Worker)
+    const ps = cluster.isPrimary ? 'P' : 'W'
+    const { pid } = process
+    const url = await app.getUrl()
+
+    logger.log(`[${ps + pid}] Server running on ${url}`)
   })
+
+  if (module.hot) {
+    module.hot.accept()
+    module.hot.dispose(() => app.close())
+  }
 }
 
 bootstrap()
