@@ -20,8 +20,9 @@ export class HttpResponse<T = any> {
   static success<T>(data?: T, msg?: string) {
     return new HttpResponse(SUCCESS_CODE, data, msg)
   }
-  static error() {
-    // xxxxxxxxxx
+
+  static error(code: number, msg?: string) {
+    return new HttpResponse(code, null, msg)
   }
 }
 
