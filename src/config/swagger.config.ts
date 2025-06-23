@@ -1,5 +1,5 @@
 import { registerAs, type ConfigType } from '@nestjs/config'
-import { env, envBoolean } from '@/utils/env'
+import { env, envBoolean } from '@/utils/env.util'
 
 export const swaggerRegToken = 'swagger'
 

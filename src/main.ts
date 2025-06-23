@@ -14,11 +14,11 @@ import { useContainer } from 'class-validator'
 import { AppModule } from './app.module'
 import { setupSwagger } from './swagger'
 import { ConfigKeyPaths } from './config'
-import { AppConfig } from './config/app'
-import { LoggingInterceptor } from './common/interceptor/logging'
-import { isDev, isMainProcess } from './utils/env'
+import { AppConfig } from './config/app.config'
+import { LoggingInterceptor } from './common/interceptor/logging.interceptor'
+import { isDev, isMainProcess } from './utils/env.util'
 import { LoggerService } from './shared/logger/logger.service'
-import { fastifyApp } from './common/adapters/fastify'
+import { fastifyApp } from './common/adapters/fastify.adapter'
 
 declare const module: any
 

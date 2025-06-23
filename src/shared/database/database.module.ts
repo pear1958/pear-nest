@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { DataSource } from 'typeorm'
-import { DatabaseConfig } from '@/config/database'
-import { env } from '@/utils/env'
+import { DatabaseConfig } from '@/config/database.config'
+import { env } from '@/utils/env.util'
 import { ConfigKeyPaths } from '@/config'
 import { CustomORMLogger } from './custom-orm-logger'
-import { UniqueConstraint } from './constraints/unique'
+import { UniqueConstraint } from './constraints/unique.constraint'
 
 const providers = [UniqueConstraint]
 

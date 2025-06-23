@@ -1,4 +1,4 @@
-import { env, envNumber } from '@/utils/env'
+import { env, envNumber } from '@/utils/env.util'
 import { type ConfigType, registerAs } from '@nestjs/config'
 
 export const appRegToken = 'app'

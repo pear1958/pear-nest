@@ -5,8 +5,8 @@ import { CacheModule } from '@nestjs/cache-manager'
 import { redisStore } from 'cache-manager-ioredis-yet'
 import { RedisModule as NestRedisModule, RedisService } from '@liaoliaots/nestjs-redis'
 import { ConfigKeyPaths } from '@/config'
-import { RedisConfig } from '@/config/redis'
-import { REDIS_CLIENT } from '@/common/decorators/inject-redis'
+import { RedisConfig } from '@/config/redis.config'
+import { REDIS_CLIENT } from '@/common/decorators/inject-redis.decorator'
 import { CacheService } from './cache.service'
 
 const providers: Provider[] = [

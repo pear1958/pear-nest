@@ -1,7 +1,7 @@
-import { appRegToken, appConfig, type AppConfig } from './app'
-import { swaggerRegToken, swaggerConfig, type SwaggerConfig } from './swagger'
-import { dbRegToken, type DatabaseConfig, databaseConfig } from './database'
-import { RedisConfig, redisConfig, redisRegToken } from './redis'
+import { appRegToken, appConfig, type AppConfig } from './app.config'
+import { swaggerRegToken, swaggerConfig, type SwaggerConfig } from './swagger.config'
+import { dbRegToken, type DatabaseConfig, databaseConfig } from './database.config'
+import { RedisConfig, redisConfig, redisRegToken } from './redis.config'
 
 export interface AllConfigType {
   [appRegToken]: AppConfig

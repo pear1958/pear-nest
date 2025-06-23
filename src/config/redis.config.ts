@@ -1,5 +1,5 @@
 import { ConfigType, registerAs } from '@nestjs/config'
-import { env, envNumber } from '@/utils/env'
+import { env, envNumber } from '@/utils/env.util'
 
 export const redisRegToken = 'redis'
 

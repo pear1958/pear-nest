@@ -1,9 +1,9 @@
 import { Controller, Post, Body, Ip, Headers } from '@nestjs/common'
 import { ApiOperation } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
-import { ApiResult } from '@/common/decorators/api-result'
-import { LoginToken } from '@/common/model/auth'
-import { LoginDto } from './dto/auth'
+import { ApiResult } from '@/common/decorators/api-result.decorator'
+import { LoginToken } from '@/modules/auth/model/auth.model'
+import { LoginDto } from './dto/auth.dto'
 
 @Controller('auth')
 export class AuthController {

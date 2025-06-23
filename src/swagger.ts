@@ -2,11 +2,11 @@ import { type INestApplication, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { ConfigKeyPaths } from './config'
-import { SwaggerConfig } from './config/swagger'
-import { env } from './utils/env'
-import { AppConfig } from './config/app'
-import { HttpResponse, Tree } from './common/model/response'
-import { API_SECURITY_AUTH } from './common/decorators/swagger'
+import { SwaggerConfig } from './config/swagger.config'
+import { env } from './utils/env.util'
+import { AppConfig } from './config/app.config'
+import { HttpResponse, Tree } from './common/model/response.model'
+import { API_SECURITY_AUTH } from './common/decorators/swagger.decorator'
 
 export function setupSwagger(app: INestApplication, configService: ConfigService<ConfigKeyPaths>) {
   const { name, prefix } = configService.get<AppConfig>('app')!

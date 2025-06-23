@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common'
-import { ErrorEnum } from '../constant/error-code'
-import { SUCCESS_CODE } from '../constant/response'
+import { ErrorEnum } from '../../constant/error-code.constant'
+import { SUCCESS_CODE } from '../../constant/response.constant'
 
 // 比如返回给前端的数据格式为:
 // {

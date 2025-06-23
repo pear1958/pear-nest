@@ -8,8 +8,8 @@ import {
 import { Reflector } from '@nestjs/core'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { BYPASS_KEY } from '../decorators/bypass'
-import { HttpResponse } from '../model/response'
+import { BYPASS_KEY } from '../decorators/bypass.decorator'
+import { HttpResponse } from '../model/response.model'
 
 /**
  * 统一处理接口请求与响应结果, 如果不需要则添加 @Bypass 装饰器

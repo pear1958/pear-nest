@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { DeviceService } from './device.service'
 import { CreateDeviceDto } from './dto/create-device.dto'
 import { UpdateDeviceDto } from './dto/update-device.dto'
-import { ApiSecurityAuth } from '@/common/decorators/swagger'
+import { ApiSecurityAuth } from '@/common/decorators/swagger.decorator'
 
 @ApiSecurityAuth()
 @Controller('device')

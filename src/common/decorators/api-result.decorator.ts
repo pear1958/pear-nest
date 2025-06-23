@@ -1,7 +1,7 @@
 import { HttpStatus, RequestMethod, Type, applyDecorators } from '@nestjs/common'
 import { METHOD_METADATA } from '@nestjs/common/constants'
 import { ApiExtraModels, ApiResponse, getSchemaPath } from '@nestjs/swagger'
-import { HttpResponse } from '../model/response'
+import { HttpResponse } from '../model/response.model'
 
 interface Params<T> {
   type?: T | T[]

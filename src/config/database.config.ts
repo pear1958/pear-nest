@@ -1,7 +1,7 @@
 import { DataSource, DataSourceOptions } from 'typeorm'
 import { ConfigType, registerAs } from '@nestjs/config'
 import dotenv from 'dotenv'
-import { env, envBoolean, envNumber } from '@/utils/env'
+import { env, envBoolean, envNumber } from '@/utils/env.util'
 
 // 避免无法获取到环境变量中的值
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` })

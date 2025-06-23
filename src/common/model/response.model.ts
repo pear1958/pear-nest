@@ -1,4 +1,4 @@
-import { SUCCESS_CODE, SUCCESS_MSG } from '@/common/constant/response'
+import { SUCCESS_CODE, SUCCESS_MSG } from '@/constant/response.constant'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class HttpResponse<T = any> {
