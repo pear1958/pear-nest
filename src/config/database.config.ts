@@ -14,7 +14,7 @@ const dataSourceOptions: DataSourceOptions = {
   username: env('DB_USERNAME'),
   password: env('DB_PASSWORD'),
   // 自动创建表 or 自动同步表结构  必须为 true 才能自动创建表
-  synchronize: envBoolean('DB_SYNCHRONIZE', true),
+  synchronize: false,
   // 解决通过 pnpm migration:run 初始化数据时，遇到的 SET FOREIGN_KEY_CHECKS = 0; 等语句报错问题, 仅在执行数据迁移操作时设为 true
   // multipleStatements: currentScript === 'typeorm',
   entities: ['dist/modules/**/*.entity{.ts,.js}']

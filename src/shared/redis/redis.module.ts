@@ -41,7 +41,7 @@ const providers: Provider[] = [
 /**
  * 集成 Redis 缓存和发布订阅功能
  */
-@Global()
+// @Global()
 @Module({
   imports: [
     // 配置 NestJS 缓存管理器, 使用 Redis 作为存储

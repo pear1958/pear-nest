@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { Module, ClassSerializerInterceptor } from '@nestjs/common'
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'
 import { ConfigModule } from '@nestjs/config'
 import { ClsModule } from 'nestjs-cls'
@@ -45,8 +45,11 @@ import { AllExceptionFilter } from './common/filters/all-exception.filter'
     SystemModule
   ],
   controllers: [],
+  // 顺序: 请求从前到后依次执行, 响应从后到前依次执行
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionFilter },
+    // 使 @Exclude() 等序列化装饰器在整个应用中生效  以及数据转换逻辑等
+    { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
     // 使用 NestJS 的内置令牌 APP_INTERCEPTOR 将 TransformInterceptor 注册为 全局拦截器
     { provide: APP_INTERCEPTOR, useClass: TransformInterceptor }
   ]
