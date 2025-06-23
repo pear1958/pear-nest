@@ -3,9 +3,9 @@ import type { Redis } from 'ioredis'
 import { Cache } from 'cache-manager'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Emitter } from '@socket.io/redis-emitter'
-import { RedisIoAdapterKey } from '@/common/adapters/socket.adapter'
-import { API_CACHE_PREFIX } from '@/common/constant/cache.constant'
-import { getRedisKey } from '@/utils/redis.util'
+import { RedisIoAdapterKey } from '@/common/adapters/socket'
+import { API_CACHE_PREFIX } from '@/common/constant/cache'
+import { getRedisKey } from '@/utils/redis'
 
 export type TCacheResult<T> = Promise<T | undefined>
 

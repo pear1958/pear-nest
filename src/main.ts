@@ -18,7 +18,7 @@ import { AppConfig } from './config/app'
 import { LoggingInterceptor } from './common/interceptor/logging'
 import { isDev, isMainProcess } from './utils/env'
 import { LoggerService } from './shared/logger/logger.service'
-import { fastifyApp } from './common/adapters/fastify.adapter'
+import { fastifyApp } from './common/adapters/fastify'
 
 declare const module: any
 
