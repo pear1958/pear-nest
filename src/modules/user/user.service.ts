@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common'
-import { CreateUserDto } from './dto/create-user.dto'
-import { UpdateUserDto } from './dto/update-user.dto'
+import { Repository } from 'typeorm'
 import { menuList } from 'src/mock/menuList'
+import { UserEntity } from './entities/user.entity'
+
+enum UserStatus {
+  Disable = 0,
+  Enabled = 1,
+}
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    console.log('createUserDto', createUserDto)
-    return true
-  }
+  constructor(private readonly userRepository: Repository<UserEntity>) {}
 
   findAll() {
     return menuList
@@ -32,15 +34,13 @@ export class UserService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`
+  async findUserByUserName(username: string): Promise<UserEntity | undefined> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .where({
+        username,
+        status: UserStatus.Enabled
+      })
+      .getOne()
   }
 }

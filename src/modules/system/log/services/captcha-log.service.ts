@@ -7,5 +7,7 @@ export class CaptchaLogService {
     code: string,
     provider: 'sms' | 'email',
     uid?: number
-  ): Promise<void> {}
+  ): Promise<void> {
+    // to-do
+  }
 }
