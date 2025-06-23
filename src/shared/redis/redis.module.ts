@@ -13,20 +13,26 @@ import { RedisPubSub } from './pubsub'
 import { RedisPubSubService } from './pubsub.service'
 
 const providers: Provider[] = [
+  // 自定义缓存服务
   CacheService,
+  // Redis发布订阅服务提供者  供下面 inject
   {
     inject: [ConfigService],
     provide: REDIS_PUBSUB,
     useFactory: (configService: ConfigService<ConfigKeyPaths>) => {
       const redisOptions: RedisOptions = configService.get<RedisConfig>('redis')
+      // 创建并返回Redis发布订阅实例
       return new RedisPubSub(redisOptions)
     }
   },
+  // 发布订阅服务
   RedisPubSubService,
+  // Redis客户端提供者
   {
     inject: [RedisService],
     provide: REDIS_CLIENT,
     useFactory: (redisService: RedisService) => {
+      // 从Redis服务获取默认客户端实例
       return redisService.getOrThrow()
     }
   }
@@ -63,6 +69,7 @@ const providers: Provider[] = [
     })
   ],
   providers,
+  // 导出提供者和CacheModule, 使其他模块可以使用
   exports: [...providers, CacheModule]
 })
 export class RedisModule {}
