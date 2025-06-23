@@ -8,15 +8,27 @@ import { ConfigKeyPaths } from '@/config'
 import { RedisConfig } from '@/config/redis.config'
 import { REDIS_CLIENT } from '@/common/decorators/inject-redis.decorator'
 import { CacheService } from './cache.service'
+import { REDIS_PUBSUB } from '@/constant/redis.constant'
+import { RedisPubSub } from './pubsub'
+import { RedisPubSubService } from './pubsub.service'
 
 const providers: Provider[] = [
   CacheService,
   {
+    inject: [ConfigService],
+    provide: REDIS_PUBSUB,
+    useFactory: (configService: ConfigService<ConfigKeyPaths>) => {
+      const redisOptions: RedisOptions = configService.get<RedisConfig>('redis')
+      return new RedisPubSub(redisOptions)
+    }
+  },
+  RedisPubSubService,
+  {
+    inject: [RedisService],
     provide: REDIS_CLIENT,
     useFactory: (redisService: RedisService) => {
       return redisService.getOrThrow()
-    },
-    inject: [RedisService] // 注入 RedisService
+    }
   }
 ]
 
