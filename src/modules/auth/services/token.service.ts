@@ -6,6 +6,8 @@ import { InjectRedis } from '@/common/decorators/inject-redis.decorator'
 import { SecurityConfig, securityConfig } from '@/config/security.config'
 import { AccessTokenEntity } from '../entities/access-token.entity'
 import { UserEntity } from '@/modules/user/entities/user.entity'
+import { RefreshTokenEntity } from '../entities/refresh-token.entity'
+import { generateUUID } from '@/utils/index.util'
 
 @Injectable()
 export class TokenService {
@@ -31,12 +33,39 @@ export class TokenService {
     // 生成accessToken
     const accessToken = new AccessTokenEntity()
     accessToken.value = jwtSign
-    accessToken.user = { id: uid } as UserEntity // to-do
+    accessToken.user = { id: uid } as UserEntity
     accessToken.expired_at = dayjs().add(this.securityConfig.jwtExprire, 'second').toDate()
+    await accessToken.save()
+
+    // 生成refreshToken
+    const refreshToken = await this.generateRefreshToken(accessToken, dayjs())
 
     return {
       accessToken: jwtSign,
-      refresh_token: 222
+      refreshToken
     }
+  }
+
+  /**
+   * 生成新的RefreshToken并存入数据库
+   * @param accessToken
+   * @param now
+   */
+  async generateRefreshToken(accessToken: AccessTokenEntity, now: dayjs.Dayjs): Promise<string> {
+    const refreshTokenPayload = {
+      uuid: generateUUID()
+    }
+
+    const refreshTokenSign = await this.jwtService.signAsync(refreshTokenPayload, {
+      secret: this.securityConfig.refreshSecret
+    })
+
+    const refreshToken = new RefreshTokenEntity()
+    refreshToken.value = refreshTokenSign
+    refreshToken.expired_at = now.add(this.securityConfig.refreshExpire, 'second').toDate()
+    refreshToken.accessToken = accessToken
+    await refreshToken.save()
+
+    return refreshTokenSign
   }
 }

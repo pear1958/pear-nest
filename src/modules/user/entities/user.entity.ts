@@ -36,7 +36,25 @@ export class UserEntity extends CommonEntity {
   @Column({ type: 'tinyint', nullable: true, default: 1 })
   status: number
 
+  // to-do
+
+  // @ManyToMany(() => RoleEntity, role => role.users)
+  // @JoinTable({
+  //   name: 'sys_user_roles',
+  //   joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+  //   inverseJoinColumn: { name: 'role_id', referencedColumnName: 'id' }
+  // })
+  // roles: Relation<RoleEntity[]>
+
+  // @ManyToOne(() => DeptEntity, dept => dept.users)
+  // @JoinColumn({ name: 'dept_id' })
+  // dept: Relation<DeptEntity>
+
+  // 通过accessToken的user字段 找到我
   @OneToMany(() => AccessTokenEntity, accessToken => accessToken.user, {
+    // 保存 / 删除当前实体时，自动 保存 / 删除 关联实体
+    // 无需手动调用 accessToken.save()，TypeORM 会自动将新 Token 持久化到数据库
+    // 无需先手动删除所有 Token，TypeORM 会自动级联删除
     cascade: true
   })
   accessTokens: Relation<AccessTokenEntity[]>
