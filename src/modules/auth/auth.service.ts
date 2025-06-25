@@ -3,6 +3,7 @@ import { UserService } from '../user/user.service'
 import { isEmpty } from 'lodash-es'
 import { BusinessException } from '@/common/exception/business.exception'
 import { ErrorEnum } from '@/constant/error-code.constant'
+import { md5 } from '@/utils/crypto.util'
 
 @Injectable()
 export class AuthService {
@@ -17,6 +18,13 @@ export class AuthService {
 
     // 用户名不存在
     if (isEmpty(user)) {
+      throw new BusinessException(ErrorEnum.INVALID_USERNAME_PASSWORD)
+    }
+
+    const comparePassword = md5(`${password}${user.psalt}`)
+
+    // 密码错误
+    if (user.password !== comparePassword) {
       throw new BusinessException(ErrorEnum.INVALID_USERNAME_PASSWORD)
     }
 
