@@ -1,5 +1,5 @@
-import { ApiTags } from '@nestjs/swagger'
-import { Controller, Query } from '@nestjs/common'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Controller, Get, Query } from '@nestjs/common'
 import Redis from 'ioredis'
 import { isEmpty } from 'lodash-es'
 import * as svgCaptcha from 'svg-captcha'
@@ -8,12 +8,18 @@ import { ImageCaptchaDto } from '../dto/captcha.dto'
 import { generateUUID } from '@/utils/index.util'
 import { genCaptchaImgKey } from '@/helper/genRedisKey'
 import { ImageCaptcha } from '../dto/auth.dto'
+import { Public } from '@/common/decorator/public.decorator'
+import { ApiResult } from '@/common/decorator/api-result.decorator'
 
 @ApiTags('Captcha - 验证码模块')
 @Controller('auth/captcha')
 export class CaptchaController {
   constructor(@InjectRedis() private redis: Redis) {}
 
+  @Get('img')
+  @ApiOperation({ summary: '获取登录图片验证码' })
+  @ApiResult({ type: ImageCaptcha })
+  @Public()
   async captchaByImg(@Query() dto: ImageCaptchaDto): Promise<ImageCaptcha> {
     const { width, height } = dto
 

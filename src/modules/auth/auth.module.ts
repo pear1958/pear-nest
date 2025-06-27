@@ -13,6 +13,7 @@ import { SecurityConfig } from '@/config/security.config'
 import { isDev } from '@/utils/env.util'
 import { UserModule } from '../user/user.module'
 import { LogModule } from '../system/log/log.module'
+import { CaptchaController } from './controllers/captcha.controller'
 
 const providers = [AuthService, CaptchaService, TokenService]
 
@@ -38,7 +39,7 @@ const providers = [AuthService, CaptchaService, TokenService]
     // 比如在 自己的 CaptchaService 服务中就会用到
     LogModule
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, CaptchaController],
   providers: [...providers],
   exports: [TypeOrmModule, JwtModule, ...providers]
 })
