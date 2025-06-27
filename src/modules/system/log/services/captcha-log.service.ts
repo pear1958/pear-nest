@@ -14,13 +14,13 @@ export class CaptchaLogService {
     account: string,
     code: string,
     provider: 'sms' | 'email',
-    uid?: number
+    userId?: number
   ): Promise<void> {
     await this.captchaLogRepository.save({
       account,
       code,
       provider,
-      userId: uid
+      userId
     })
   }
 }
