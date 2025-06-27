@@ -6,7 +6,7 @@ import { SwaggerConfig } from './config/swagger.config'
 import { env } from './utils/env.util'
 import { AppConfig } from './config/app.config'
 import { HttpResponse, Tree } from './common/model/response.model'
-import { API_SECURITY_AUTH } from './common/decorators/swagger.decorator'
+import { API_SECURITY_AUTH } from './common/decorator/swagger.decorator'
 
 export function setupSwagger(app: INestApplication, configService: ConfigService<ConfigKeyPaths>) {
   const { name, prefix } = configService.get<AppConfig>('app')!

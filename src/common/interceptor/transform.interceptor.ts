@@ -8,7 +8,7 @@ import {
 import { Reflector } from '@nestjs/core'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { BYPASS_KEY } from '../decorators/bypass.decorator'
+import { BYPASS_KEY } from '../decorator/bypass.decorator'
 import { HttpResponse } from '../model/response.model'
 
 /**

@@ -3,11 +3,11 @@ import { Controller, Query } from '@nestjs/common'
 import Redis from 'ioredis'
 import { isEmpty } from 'lodash-es'
 import * as svgCaptcha from 'svg-captcha'
-import { InjectRedis } from '@/common/decorators/inject-redis.decorator'
+import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
 import { ImageCaptchaDto } from '../dto/captcha.dto'
-import { ImageCaptcha } from '../model/auth.model'
 import { generateUUID } from '@/utils/index.util'
 import { genCaptchaImgKey } from '@/helper/genRedisKey'
+import { ImageCaptcha } from '../dto/auth.dto'
 
 @ApiTags('Captcha - 验证码模块')
 @Controller('auth/captcha')

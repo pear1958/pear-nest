@@ -3,7 +3,7 @@ import type { Redis } from 'ioredis'
 import { Cache } from 'cache-manager'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Emitter } from '@socket.io/redis-emitter'
-import { RedisIoAdapterKey } from '@/common/adapters/socket.adapter'
+import { RedisIoAdapterKey } from '@/common/adapter/socket.adapter'
 import { API_CACHE_PREFIX } from '@/constant/cache.constant'
 import { getRedisKey } from '@/utils/redis.util'
 

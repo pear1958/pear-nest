@@ -7,7 +7,7 @@ import { DeviceModule, SystemModule, UserModule, AuthModule } from './modules'
 import config from './config'
 import { SharedModule } from './shared/shared.module'
 import { DatabaseModule } from './shared/database/database.module'
-import { AllExceptionFilter } from './common/filters/all-exception.filter'
+import { AllExceptionFilter } from './common/filter/all-exception.filter'
 
 @Module({
   imports: [

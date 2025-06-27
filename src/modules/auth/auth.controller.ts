@@ -1,9 +1,8 @@
 import { Controller, Post, Body, Ip, Headers } from '@nestjs/common'
 import { ApiOperation } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
-import { ApiResult } from '@/common/decorators/api-result.decorator'
-import { LoginToken } from '@/modules/auth/model/auth.model'
-import { LoginDto } from './dto/auth.dto'
+import { ApiResult } from '@/common/decorator/api-result.decorator'
+import { LoginDto, LoginToken } from './dto/auth.dto'
 import { CaptchaService } from './services/captcha.service'
 
 @Controller('auth')

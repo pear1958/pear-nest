@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import Redis from 'ioredis'
 import { isEmpty } from 'lodash-es'
-import { InjectRedis } from '@/common/decorators/inject-redis.decorator'
+import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
 import { CaptchaLogService } from '@/modules/system/log/services/captcha-log.service'
 import { genCaptchaImgKey } from '@/helper/genRedisKey'
 import { BusinessException } from '@/common/exception/business.exception'
