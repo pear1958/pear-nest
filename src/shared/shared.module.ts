@@ -9,6 +9,6 @@ import { RedisModule } from './redis/redis.module'
     LoggerModule.forRoot(), // 只需导入一次
     RedisModule
   ],
-  exports: []
+  exports: [RedisModule]
 })
 export class SharedModule {}

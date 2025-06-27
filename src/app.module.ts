@@ -3,7 +3,7 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'
 import { ConfigModule } from '@nestjs/config'
 import { ClsModule } from 'nestjs-cls'
 import { TransformInterceptor } from './common/interceptor/transform.interceptor'
-import { DeviceModule, SystemModule, UserModule, AuthModule } from './modules'
+import { DeviceModule, SystemModule, AuthModule } from './modules'
 import config from './config'
 import { SharedModule } from './shared/shared.module'
 import { DatabaseModule } from './shared/database/database.module'
@@ -40,7 +40,6 @@ import { AllExceptionFilter } from './common/filter/all-exception.filter'
     SharedModule,
     DatabaseModule,
     AuthModule,
-    UserModule,
     DeviceModule,
     SystemModule
   ],

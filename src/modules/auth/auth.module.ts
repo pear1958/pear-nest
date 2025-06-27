@@ -12,6 +12,7 @@ import { ConfigKeyPaths } from '@/config'
 import { SecurityConfig } from '@/config/security.config'
 import { isDev } from '@/utils/env.util'
 import { UserModule } from '../user/user.module'
+import { LogModule } from '../system/log/log.module'
 
 const providers = [AuthService, CaptchaService, TokenService]
 
@@ -32,7 +33,10 @@ const providers = [AuthService, CaptchaService, TokenService]
       },
       inject: [ConfigService]
     }),
-    UserModule
+    UserModule,
+    // 需要使用 验证码日志服务(CaptchaLogService)
+    // 比如在 自己的 CaptchaService 服务中就会用到
+    LogModule
   ],
   controllers: [AuthController],
   providers: [...providers],

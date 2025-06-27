@@ -1,16 +1,19 @@
 import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import { menuList } from 'src/mock/menuList'
+import { menuList } from '@/mock/menuList'
 import { UserEntity } from './entities/user.entity'
 
 enum UserStatus {
   Disable = 0,
-  Enabled = 1,
+  Enabled = 1
 }
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: Repository<UserEntity>) {}
+  constructor(
+    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>
+  ) {}
 
   findAll() {
     return menuList
