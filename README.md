@@ -8,6 +8,8 @@
 
 - 快速生成模块 nest g resource dir
 
+- 启动 redis `redis-server redis.windows.conf`
+
 ### 接口文档
 
 - 推荐使用 swagger -> apifox / knife4j

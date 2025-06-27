@@ -1,7 +1,7 @@
+import { Column, Entity, OneToMany, Relation } from 'typeorm'
+import { Exclude } from 'class-transformer'
 import { CommonEntity } from '@/common/entity/common.entity'
 import { AccessTokenEntity } from '@/modules/auth/entities/access-token.entity'
-import { Exclude } from 'class-transformer'
-import { Column, Entity, OneToMany, Relation } from 'typeorm'
 
 @Entity({ name: 'sys_user' })
 export class UserEntity extends CommonEntity {
