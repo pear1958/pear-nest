@@ -17,7 +17,7 @@ export class AuthController {
   @ApiResult({ type: LoginToken })
   async login(@Body() params: LoginDto, @Ip() ip: string, @Headers('user-agent') ua: string) {
     await this.captchaService.checkImgCaptcha(params.captchaId, params.verifyCode)
-    const token = this.authService.login(params.username, params.password, ip, ua)
+    const token = await this.authService.login(params.username, params.password, ip, ua)
     return { token }
   }
 }

@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
 import { ApiOperation } from '@nestjs/swagger'
 import { UserService } from './user.service'
+import { UserDto } from './dto/user.dto'
 
 @Controller('user')
 export class UserController {
@@ -14,9 +15,10 @@ export class UserController {
   @Post()
   @ApiOperation({ summary: '新增用户' })
   // @Perm(permissions.CREATE)
-  // async create(@Body() dto: UserDto): Promise<void> {
-  //   await this.userService.create(dto)
-  // }
+  async create(@Body() dto: UserDto): Promise<void> {
+    await this.userService.create(dto)
+  }
+  
   @Post('logout')
   logout() {
     return true

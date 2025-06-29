@@ -51,6 +51,8 @@ export class AuthService {
     // 设置密码版本号 当密码修改时，版本号+1
     await this.redis.set(genAuthPVKey(user.id), 1)
 
+    console.log('token', token)
+
     // to-do 添加登录日志
 
     return token.accessToken

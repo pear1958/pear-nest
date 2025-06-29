@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
 import { SecurityConfig, securityConfig } from '@/config/security.config'
 import { AccessTokenEntity } from '../entities/access-token.entity'
-import { UserEntity } from '@/modules/user/entities/user.entity'
+import { UserEntity } from '@/modules/user/user.entity'
 import { RefreshTokenEntity } from '../entities/refresh-token.entity'
 import { generateUUID } from '@/utils/index.util'
 
