@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common'
 import { RouterModule } from '@nestjs/core'
+import { UserModule } from '../user/user.module'
 import { MenuModule } from './menu/menu.module'
 import { RoleModule } from './role/role.module'
 import { LogModule } from './log/log.module'
 
-const modules = [RoleModule, MenuModule, LogModule]
+const modules = [UserModule, RoleModule, MenuModule, LogModule]
 
 @Module({
   imports: [
