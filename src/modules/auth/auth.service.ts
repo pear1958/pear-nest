@@ -55,8 +55,6 @@ export class AuthService {
     // 设置密码版本号 当密码修改时，版本号+1
     await this.redis.set(genAuthPVKey(user.id), 1)
 
-    console.log('token', token)
-
     await this.loginLogService.create(user.id, ip, ua)
 
     return token.accessToken
@@ -100,10 +98,11 @@ export class AuthService {
 
     await this.redis.set(genTokenBlacklistKey(accessToken), accessToken, 'EX', exp)
 
-    // if (this.appConfig.multiDeviceLogin) {
-    //   await this.tokenService.removeAccessToken(accessToken)
-    // } else {
-    //   await this.userService.forbidden(user.uid, accessToken)
-    // }
+    if (this.appConfig.multiDeviceLogin) {
+      // 每个端的token不一样, 删除一个token即可
+      await this.tokenService.removeAccessToken(accessToken)
+    } else {
+      await this.userService.forbidden(user.uid, accessToken)
+    }
   }
 }

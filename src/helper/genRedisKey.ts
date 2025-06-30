@@ -19,3 +19,8 @@ export function genAuthPVKey(val: string | number) {
 export function genTokenBlacklistKey(tokenId: string) {
   return `${RedisKeys.TOKEN_BLACKLIST_PREFIX}${String(tokenId)}` as const
 }
+
+// 生成 online user redis key
+export function genOnlineUserKey(tokenId: string) {
+  return `${RedisKeys.ONLINE_USER_PREFIX}${String(tokenId)}` as const
+}

@@ -8,6 +8,7 @@ import { AccessTokenEntity } from '../entities/access-token.entity'
 import { UserEntity } from '@/modules/user/user.entity'
 import { RefreshTokenEntity } from '../entities/refresh-token.entity'
 import { generateUUID } from '@/utils/index.util'
+import { genOnlineUserKey } from '@/helper/genRedisKey'
 
 @Injectable()
 export class TokenService {
@@ -94,5 +95,20 @@ export class TokenService {
     }
 
     return isValid
+  }
+
+  /**
+   * 移除AccessToken且自动移除关联的RefreshToken
+   */
+  async removeAccessToken(value: string) {
+    const accessToken = await AccessTokenEntity.findOne({
+      where: { value }
+    })
+
+    if (accessToken) {
+      // 删除该在线的用户
+      this.redis.del(genOnlineUserKey(accessToken.id))
+      await accessToken.remove()
+    }
   }
 }

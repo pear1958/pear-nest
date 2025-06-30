@@ -12,6 +12,13 @@ import { md5 } from '@/utils/crypto.util'
 import { ParamConfigService } from '../system/param-config/param-config.service'
 import { SYS_USER_INITPASSWORD } from '@/constant/system.constant'
 import { RegisterDto } from '../auth/dto/auth.dto'
+import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
+import Redis from 'ioredis'
+import { genAuthPVKey, genAuthTokenKey, genOnlineUserKey } from '@/helper/genRedisKey'
+import { AccessTokenEntity } from '../auth/entities/access-token.entity'
+import { AccountInfo } from './user.model'
+import { AccountUpdateDto } from '../auth/dto/account.dto'
+import { PasswordUpdateDto } from './dto/password.dto'
 
 enum UserStatus {
   Disable = 0,
@@ -21,6 +28,7 @@ enum UserStatus {
 @Injectable()
 export class UserService {
   constructor(
+    @InjectRedis() private readonly redis: Redis,
     @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
     @InjectEntityManager() private entityManager: EntityManager,
     private readonly paramConfigService: ParamConfigService
@@ -94,6 +102,96 @@ export class UserService {
       const user = await manager.save(u)
       return user
     })
+  }
+
+  /**
+   * 禁用用户
+   */
+  async forbidden(uid: number, accessToken?: string): Promise<void> {
+    await this.redis.del(genAuthPVKey(uid))
+    await this.redis.del(genAuthTokenKey(uid))
+    // await this.redis.del(genAuthPermKey(uid))
+    if (accessToken) {
+      const token = await AccessTokenEntity.findOne({
+        where: { value: accessToken }
+      })
+      this.redis.del(genOnlineUserKey(token.id))
+    }
+  }
+
+  /**
+   * 获取用户信息
+   * @param uid user id
+   */
+  async getAccountInfo(uid: number): Promise<AccountInfo> {
+    const user: UserEntity = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.roles', 'role')
+      .where(`user.id = :uid`, { uid })
+      .getOne()
+
+    if (isEmpty(user)) {
+      throw new BusinessException(ErrorEnum.USER_NOT_FOUND)
+    }
+    delete user?.psalt
+    return user
+  }
+
+  /**
+   * 更新个人信息
+   */
+  async updateAccountInfo(uid: number, info: AccountUpdateDto): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: uid })
+
+    if (isEmpty(user)) {
+      throw new BusinessException(ErrorEnum.USER_NOT_FOUND)
+    }
+
+    const data = {
+      ...(info.nickname ? { nickname: info.nickname } : null),
+      ...(info.avatar ? { avatar: info.avatar } : null),
+      ...(info.email ? { email: info.email } : null),
+      ...(info.phone ? { phone: info.phone } : null),
+      ...(info.qq ? { qq: info.qq } : null),
+      ...(info.remark ? { remark: info.remark } : null)
+    }
+
+    // to-do
+
+    await this.userRepository.update(uid, data)
+  }
+
+  /**
+   * 升级用户版本密码
+   */
+  async upgradePasswordV(id: number): Promise<void> {
+    const key = genAuthPVKey(id)
+    const version = await this.redis.get(key) // admin:passwordVersion:${param.id}
+    if (!isEmpty(version)) {
+      await this.redis.set(key, Number.parseInt(version) + 1)
+    }
+  }
+
+  /**
+   * 更改密码
+   */
+  async updatePassword(uid: number, dto: PasswordUpdateDto): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: uid })
+
+    if (isEmpty(user)) {
+      throw new BusinessException(ErrorEnum.USER_NOT_FOUND)
+    }
+
+    // 原密码不一致，不允许更改
+    if (user.password !== md5(`${dto.oldPassword}${user.psalt}`)) {
+      throw new BusinessException(ErrorEnum.PASSWORD_MISMATCH)
+    }
+
+    const password = md5(`${dto.newPassword}${user.psalt}`)
+
+    await this.userRepository.update({ id: uid }, { password })
+
+    await this.upgradePasswordV(user.id)
   }
 
   findAll() {
