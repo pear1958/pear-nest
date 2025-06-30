@@ -9,12 +9,14 @@ import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
 import { genAuthPVKey, genAuthTokenKey } from '@/helper/genRedisKey'
 import { SecurityConfig, securityConfig } from '@/config/security.config'
 import { TokenService } from './services/token.service'
+import { LoginLogService } from '../system/log/services/login-log.service'
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private tokenService: TokenService,
+    private loginLogService: LoginLogService,
     @InjectRedis() private readonly redis: Redis,
     @Inject(securityConfig.KEY) private securityConfig: SecurityConfig
   ) {}
@@ -53,7 +55,7 @@ export class AuthService {
 
     console.log('token', token)
 
-    // to-do 添加登录日志
+    await this.loginLogService.create(user.id, ip, ua)
 
     return token.accessToken
   }
