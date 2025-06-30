@@ -7,10 +7,10 @@ import { AuthStrategy } from '@/constant/auth.constant'
 /**
  * JWT 认证策略：验证 HTTP 请求中的 JWT Token
  * 处理流程：
- * 1. 从请求头中提取 JWT
- * 2. 使用密钥验证签名和时效性
- * 3. 解析 Token 中的用户信息
- * 4. 将用户信息挂载到请求对象上 (req.user)
+ * 1.从请求头中提取 JWT
+ * 2.使用密钥验证签名和时效性
+ * 3.解析 Token 中的用户信息
+ * 4.将用户信息挂载到请求对象上 (req.user)
  */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, AuthStrategy.JWT) {

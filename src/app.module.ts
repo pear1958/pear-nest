@@ -1,6 +1,7 @@
 import { Module, ClassSerializerInterceptor } from '@nestjs/common'
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
 import { ConfigModule } from '@nestjs/config'
+import { ThrottlerGuard } from '@nestjs/throttler'
 import { ClsModule } from 'nestjs-cls'
 import { TransformInterceptor } from './common/interceptor/transform.interceptor'
 import { DeviceModule, SystemModule, AuthModule } from './modules'
@@ -8,6 +9,7 @@ import config from './config'
 import { SharedModule } from './shared/shared.module'
 import { DatabaseModule } from './shared/database/database.module'
 import { AllExceptionFilter } from './common/filter/all-exception.filter'
+import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
 
 @Module({
   imports: [
@@ -50,7 +52,10 @@ import { AllExceptionFilter } from './common/filter/all-exception.filter'
     // 使 @Exclude() 等序列化装饰器在整个应用中生效  以及数据转换逻辑等
     { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
     // 使用 NestJS 的内置令牌 APP_INTERCEPTOR 将 TransformInterceptor 注册为 全局拦截器
-    { provide: APP_INTERCEPTOR, useClass: TransformInterceptor }
+    { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
+    // 路由守卫
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: ThrottlerGuard }
   ]
 })
 export class AppModule {}

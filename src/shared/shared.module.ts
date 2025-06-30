@@ -1,4 +1,5 @@
 import { Global, Module } from '@nestjs/common'
+import { ThrottlerModule } from '@nestjs/throttler'
 import { LoggerModule } from './logger/logger.module'
 import { RedisModule } from './redis/redis.module'
 
@@ -7,6 +8,12 @@ import { RedisModule } from './redis/redis.module'
 @Module({
   imports: [
     LoggerModule.forRoot(), // 只需导入一次
+    ThrottlerModule.forRoot([
+      {
+        limit: 20, // 不超过 20 次调用
+        ttl: 60000 // 毫秒
+      }
+    ]),
     RedisModule
   ],
   exports: [RedisModule]

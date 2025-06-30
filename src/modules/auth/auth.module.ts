@@ -14,11 +14,11 @@ import { isDev } from '@/utils/env.util'
 import { UserModule } from '../user/user.module'
 import { LogModule } from '../system/log/log.module'
 import { CaptchaController } from './controllers/captcha.controller'
-import { LocalStrategy } from './strategies/local.strategy'
+// import { LocalStrategy } from './strategies/local.strategy'
 import { JwtStrategy } from './strategies/jwt.strategy'
 
 const providers = [AuthService, CaptchaService, TokenService]
-const strategies = [LocalStrategy, JwtStrategy]
+const strategies = [JwtStrategy] // LocalStrategy
 
 @Module({
   imports: [

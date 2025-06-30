@@ -5,7 +5,7 @@ import { Strategy } from 'passport-local'
 import { AuthService } from '../auth.service'
 
 /**
- * 本地认证策略：处理用户名密码登录
+ * 这个策略的主要作用是验证用户提供的凭据（如用户名和密码）
  * 处理流程：
  * 1. 从请求体中提取用户名和密码
  * 2. 调用 AuthService 验证用户
@@ -27,7 +27,9 @@ export class LocalStrategy extends PassportStrategy(
     })
   }
 
+  // 先于 canActivate 执行
   async validate(username: string, password: string): Promise<any> {
+    // 返回验证通过的用户对象，如果验证失败则返回 null
     const user = await this.authService.validateUser(username, password)
     // Passport 会将此对象赋值给请求对象的 user 属性（req.user）
     return user
