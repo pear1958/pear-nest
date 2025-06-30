@@ -57,4 +57,24 @@ export class AuthService {
 
     return token.accessToken
   }
+
+  async validateUser(credential: string, password: string): Promise<any> {
+    const user = await this.userService.findUserByUserName(credential)
+
+    if (isEmpty(user)) {
+      throw new BusinessException(ErrorEnum.USER_NOT_FOUND)
+    }
+
+    if (user.password !== md5(`${password}${user.psalt}`)) {
+      throw new BusinessException(ErrorEnum.INVALID_USERNAME_PASSWORD)
+    }
+
+    // 省略密码字段
+    if (user) {
+      const { password, ...result } = user
+      return result
+    }
+
+    return null
+  }
 }

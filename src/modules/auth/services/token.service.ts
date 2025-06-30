@@ -68,4 +68,31 @@ export class TokenService {
 
     return refreshTokenSign
   }
+
+  /**
+   * 验证Token是否正确,如果正确则返回所属用户对象
+   */
+  async verifyAccessToken(token: string): Promise<AuthUser> {
+    return this.jwtService.verifyAsync(token)
+  }
+
+  /**
+   * 检查accessToken是否存在，并且是否处于有效期内
+   */
+  async checkAccessToken(value: string) {
+    let isValid = false
+    try {
+      await this.verifyAccessToken(value)
+      const res = await AccessTokenEntity.findOne({
+        where: { value },
+        relations: ['user', 'refreshToken'],
+        cache: true
+      })
+      isValid = Boolean(res)
+    } catch (error) {
+      // xxxxxxxx
+    }
+
+    return isValid
+  }
 }

@@ -4,8 +4,10 @@ import { AuthService } from './auth.service'
 import { ApiResult } from '@/common/decorator/api-result.decorator'
 import { LoginDto, LoginToken } from './dto/auth.dto'
 import { CaptchaService } from './services/captcha.service'
+import { Public } from '@/common/decorator/public.decorator'
 
 @Controller('auth')
+@Public()
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
