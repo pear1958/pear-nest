@@ -1,18 +1,18 @@
 import { ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common'
+import { Reflector } from '@nestjs/core'
 import { AuthGuard } from '@nestjs/passport'
 import { ExtractJwt } from 'passport-jwt'
+import Redis from 'ioredis'
+import { FastifyRequest } from 'fastify'
+import { isEmpty, isNil } from 'lodash-es'
 import { AuthStrategy, PUBLIC_KEY } from '@/constant/auth.constant'
 import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
 import { AppConfig, appConfig, RouterWhiteList } from '@/config/app.config'
-import Redis from 'ioredis'
 import { AuthService } from '../auth.service'
 import { TokenService } from '../services/token.service'
-import { Reflector } from '@nestjs/core'
-import { FastifyRequest } from 'fastify'
 import { BusinessException } from '@/common/exception/business.exception'
 import { ErrorEnum } from '@/constant/error-code.constant'
 import { genTokenBlacklistKey } from '@/helper/genRedisKey'
-import { isEmpty, isNil } from 'lodash-es'
 
 /** @type {import('fastify').RequestGenericInterface} */
 interface RequestType {
@@ -83,5 +83,29 @@ export class JwtAuthGuard extends AuthGuard(AuthStrategy.JWT) {
 
       if (!isValid) throw new BusinessException(ErrorEnum.INVALID_LOGIN)
     }
+
+    const pv = await this.authService.getPasswordVersionByUid(request.user.uid)
+    if (pv !== `${request.user.pv}`) {
+      // 密码版本不一致，登录期间已更改过密码
+      throw new BusinessException(ErrorEnum.INVALID_LOGIN)
+    }
+
+    // 不允许多端登录
+    if (!this.appConfig.multiDeviceLogin) {
+      const cacheToken = await this.authService.getTokenByUid(request.user.uid)
+      if (token !== cacheToken) {
+        // 与redis保存不一致 即二次登录(1105:您的账号已在其他地方登录)
+        throw new BusinessException(ErrorEnum.ACCOUNT_LOGGED_IN_ELSEWHERE)
+      }
+    }
+
+    return result
+  }
+
+  handleRequest(err, user, info) {
+    if (err || !user) {
+      throw err || new UnauthorizedException()
+    }
+    return user
   }
 }

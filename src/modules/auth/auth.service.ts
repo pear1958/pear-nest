@@ -77,4 +77,12 @@ export class AuthService {
 
     return null
   }
+
+  async getPasswordVersionByUid(uid: number): Promise<string> {
+    return this.redis.get(genAuthPVKey(uid))
+  }
+
+  async getTokenByUid(uid: number): Promise<string> {
+    return this.redis.get(genAuthTokenKey(uid))
+  }
 }

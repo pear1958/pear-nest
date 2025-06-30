@@ -1,4 +1,4 @@
-import { env, envNumber } from '@/utils/env.util'
+import { env, envBoolean, envNumber } from '@/utils/env.util'
 import { type ConfigType, registerAs } from '@nestjs/config'
 
 export const appRegToken = 'app'
@@ -10,6 +10,8 @@ export const appConfig = registerAs(appRegToken, () => ({
   port: envNumber('APP_PORT'),
   baseUrl: env('APP_BASE_URL'),
   prefix,
+  // 是否允许多端登录
+  multiDeviceLogin: envBoolean('MULTI_DEVICE_LOGIN', true),
   logger: {
     level: env('LOGGER_LEVEL'),
     maxFiles: envNumber('LOGGER_MAX_FILES')
