@@ -8,3 +8,5 @@ export const AuthStrategy = {
   GITHUB: 'github',
   GOOGLE: 'google'
 } as const
+
+export const ALLOW_ANON_KEY = '__allow_anon_permission_key__'

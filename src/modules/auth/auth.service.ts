@@ -6,10 +6,11 @@ import { BusinessException } from '@/common/exception/business.exception'
 import { ErrorEnum } from '@/constant/error-code.constant'
 import { md5 } from '@/utils/crypto.util'
 import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
-import { genAuthPVKey, genAuthTokenKey } from '@/helper/genRedisKey'
+import { genAuthPVKey, genAuthTokenKey, genTokenBlacklistKey } from '@/helper/genRedisKey'
 import { SecurityConfig, securityConfig } from '@/config/security.config'
 import { TokenService } from './services/token.service'
 import { LoginLogService } from '../system/log/services/login-log.service'
+import { AppConfig, appConfig } from '@/config/app.config'
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,8 @@ export class AuthService {
     private tokenService: TokenService,
     private loginLogService: LoginLogService,
     @InjectRedis() private readonly redis: Redis,
-    @Inject(securityConfig.KEY) private securityConfig: SecurityConfig
+    @Inject(securityConfig.KEY) private securityConfig: SecurityConfig,
+    @Inject(appConfig.KEY) private appConfig: AppConfig
   ) {}
 
   /**
@@ -86,5 +88,22 @@ export class AuthService {
 
   async getTokenByUid(uid: number): Promise<string> {
     return this.redis.get(genAuthTokenKey(uid))
+  }
+
+  /**
+   * 清除登录状态信息
+   */
+  async clearLoginStatus(user: AuthUser, accessToken: string): Promise<void> {
+    const exp = user.exp
+      ? (user.exp - Date.now() / 1000).toFixed(0)
+      : this.securityConfig.jwtExprire
+
+    await this.redis.set(genTokenBlacklistKey(accessToken), accessToken, 'EX', exp)
+
+    // if (this.appConfig.multiDeviceLogin) {
+    //   await this.tokenService.removeAccessToken(accessToken)
+    // } else {
+    //   await this.userService.forbidden(user.uid, accessToken)
+    // }
   }
 }

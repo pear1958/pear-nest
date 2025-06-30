@@ -16,6 +16,7 @@ import { LogModule } from '../system/log/log.module'
 import { CaptchaController } from './controllers/captcha.controller'
 // import { LocalStrategy } from './strategies/local.strategy'
 import { JwtStrategy } from './strategies/jwt.strategy'
+import { AccountController } from './controllers/account.controller'
 
 const providers = [AuthService, CaptchaService, TokenService]
 const strategies = [JwtStrategy] // LocalStrategy
@@ -42,7 +43,7 @@ const strategies = [JwtStrategy] // LocalStrategy
     // 比如在 自己的 CaptchaService 服务中就会用到
     LogModule
   ],
-  controllers: [AuthController, CaptchaController],
+  controllers: [AuthController, CaptchaController, AccountController],
   providers: [...providers, ...strategies],
   exports: [TypeOrmModule, JwtModule, ...providers]
 })
