@@ -11,6 +11,7 @@ import { randomValue } from '@/utils/index.util'
 import { md5 } from '@/utils/crypto.util'
 import { ParamConfigService } from '../system/param-config/param-config.service'
 import { SYS_USER_INITPASSWORD } from '@/constant/system.constant'
+import { RegisterDto } from '../auth/dto/auth.dto'
 
 enum UserStatus {
   Disable = 0,
@@ -66,6 +67,32 @@ export class UserService {
       const result = await manager.save(user)
 
       return result
+    })
+  }
+
+  /**
+   * 注册
+   */
+  async register({ username, ...data }: RegisterDto): Promise<void> {
+    const exists = await this.userRepository.findOneBy({
+      username
+    })
+
+    if (!isEmpty(exists)) {
+      throw new BusinessException(ErrorEnum.SYSTEM_USER_EXISTS)
+    }
+
+    await this.entityManager.transaction(async manager => {
+      const salt = randomValue(32)
+      const password = md5(`${data.password ?? 'a123456'}${salt}`)
+      const u = manager.create(UserEntity, {
+        username,
+        password,
+        status: 1,
+        psalt: salt
+      })
+      const user = await manager.save(u)
+      return user
     })
   }
 
