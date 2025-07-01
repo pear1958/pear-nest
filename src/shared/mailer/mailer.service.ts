@@ -96,25 +96,22 @@ export class MailerService {
     // 设置5分钟的过期时间
     await this.redis.set(`captcha:${to}`, code, 'EX', 60 * 5)
 
-    // 1天一个邮箱最多接收5条
-    const limitCountOfDay = await this.redis.get(`captcha:${to}:limit-day`)
+    // 一分钟内限流（每次发送重置 1 分钟计时）
+    await this.redis.set(`ip:${ip}:send:limit`, 1, 'EX', 60) // ip 1分钟内被限制发送
+    await this.redis.set(`captcha:${to}:limit`, 1, 'EX', 60) // 邮箱 1分钟内被限制收取
 
-    // 1天一个ip最多发送5条
-    const ipLimitCountOfDay = await this.redis.get(`ip:${ip}:send:limit-day`)
+    // 获取当天已发送次数（初始为 null，即 0 次）
+    const limitCountOfDay = await this.redis.get(`captcha:${to}:limit-day`) // 1天一个邮箱最多接收5条
+    const ipLimitCountOfDay = await this.redis.get(`ip:${ip}:send:limit-day`) // 1天一个ip最多发送5条
 
-    // ip 1分钟内被限制发送
-    await this.redis.set(`ip:${ip}:send:limit`, 1, 'EX', 60)
-
-    // 邮箱 1分钟内被限制收取
-    await this.redis.set(`captcha:${to}:limit`, 1, 'EX', 60)
-
+    // 设置邮箱今天还能接收的条数
     await this.redis.set(
       `captcha:${to}:send:limit-count-day`,
       limitCountOfDay,
       'EX',
       getRemainTime()
     )
-
+    // 设置ip今天还能发送的条数
     await this.redis.set(`ip:${ip}:send:limit-count-day`, ipLimitCountOfDay, 'EX', getRemainTime())
   }
 }
