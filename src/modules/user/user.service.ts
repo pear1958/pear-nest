@@ -90,6 +90,8 @@ export class UserService {
       throw new BusinessException(ErrorEnum.SYSTEM_USER_EXISTS)
     }
 
+    // 这些操作要么全部成功执行，要么全部失败回滚
+    // UserEntity 存在 级联操作（如自动保存关联实体）
     await this.entityManager.transaction(async manager => {
       const salt = randomValue(32)
       const password = md5(`${data.password ?? 'a123456'}${salt}`)
@@ -125,8 +127,8 @@ export class UserService {
    */
   async getAccountInfo(uid: number): Promise<AccountInfo> {
     const user: UserEntity = await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.roles', 'role')
+      .createQueryBuilder('user') // 创建用于构建 SQL 查询的查询构建器
+      .leftJoinAndSelect('user.roles', 'role') // role别名 后续处理关联数据时使用
       .where(`user.id = :uid`, { uid })
       .getOne()
 
