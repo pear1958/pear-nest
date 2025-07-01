@@ -3,6 +3,7 @@ import { swaggerRegToken, swaggerConfig, type SwaggerConfig } from './swagger.co
 import { dbRegToken, type DatabaseConfig, databaseConfig } from './database.config'
 import { RedisConfig, redisConfig, redisRegToken } from './redis.config'
 import { securityConfig, SecurityConfig, securityRegToken } from './security.config'
+import { mailerConfig, MailerConfig, mailerRegToken } from './mailer.config'
 
 export interface AllConfigType {
   [appRegToken]: AppConfig
@@ -10,6 +11,7 @@ export interface AllConfigType {
   [dbRegToken]: DatabaseConfig
   [redisRegToken]: RedisConfig
   [securityRegToken]: SecurityConfig
+  [mailerRegToken]: MailerConfig
 }
 
 export type ConfigKeyPaths = RecordNamePaths<AllConfigType>
@@ -19,5 +21,6 @@ export default {
   swaggerConfig,
   databaseConfig,
   redisConfig,
-  securityConfig
+  securityConfig,
+  mailerConfig
 }

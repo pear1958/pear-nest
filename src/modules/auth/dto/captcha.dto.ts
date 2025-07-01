@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsInt, IsOptional } from 'class-validator'
+import { IsEmail, IsInt, IsOptional } from 'class-validator'
 
 export class ImageCaptchaDto {
   @ApiProperty({
@@ -22,4 +22,10 @@ export class ImageCaptchaDto {
   @IsInt()
   @IsOptional()
   readonly height: number = 50
+}
+
+export class SendEmailCodeDto {
+  @ApiProperty({ description: '邮箱' })
+  @IsEmail({}, { message: '邮箱格式不正确' })
+  email: string
 }
