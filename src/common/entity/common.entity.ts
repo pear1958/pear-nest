@@ -22,11 +22,11 @@ export abstract class CommonEntity extends BaseEntity {
 export abstract class CompleteEntity extends CommonEntity {
   @ApiHideProperty() // 从 Swagger 文档中隐藏
   @Exclude() // 将实体或 dto 转换为 json 格式返回给客户端时, 排除指定的属性
-  @Column({ name: 'created_by', update: false, comment: '创建者', nullable: true })
+  @Column({ name: 'create_by', update: false, comment: '创建者', nullable: true })
   createdBy: number
 
   @ApiHideProperty()
   @Exclude()
-  @Column({ name: 'updated_by', comment: '更新者', nullable: true })
+  @Column({ name: 'update_by', comment: '更新者', nullable: true })
   updatedBy: number
 }
