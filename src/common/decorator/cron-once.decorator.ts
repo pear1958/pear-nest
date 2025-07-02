@@ -20,6 +20,8 @@ export const CronOnce: typeof Cron = (...rest): MethodDecorator => {
     return Cron.call(null, ...rest)
   }
 
+  // 当应用以集群模式运行时，除了第一个工作进程（worker id=1）之外的其他工作进程会执行第三种情况
+
   // 情况3：其他进程不执行定时任务
   // 返回一个空装饰器，不做任何处理
   const returnNothing: MethodDecorator = () => {}
