@@ -18,8 +18,8 @@ interface Params {
 }
 
 /**
- * 验证某个字段的唯一性
- * name: 为验证器指定唯一名称
+ * 自定义验证逻辑
+ * name: 为验证器指定唯一名称 args.constraints[0].name 可以访问
  * async: 声明这是一个异步验证器, 意味着 validate 方法返回 Promise, 适用于数据库查询等异步操作
  */
 @ValidatorConstraint({ name: 'entityItemUnique', async: true })
@@ -30,11 +30,14 @@ export class UniqueConstraint implements ValidatorConstraintInterface {
     private readonly cls: ClsService
   ) {}
 
+  // 如果验证成功，则 method 返回 true，否则返回 false
   async validate(value: any, args: ValidationArguments) {
     const config = {
-      field: args.property
+      field: args.property // 当前被验证的类属性名
     }
 
+    // args.constraints[0]：装饰器传入的参数
+    // 即 @IsUnique(UserEntity) 或 @IsUnique({ entity: UserEntity, field: 'email' }) 中的参数
     const condition = ('entity' in args.constraints[0]
       ? merge(config, args.constraints[0])
       : {
@@ -45,7 +48,6 @@ export class UniqueConstraint implements ValidatorConstraintInterface {
     if (!condition.entity) return false
 
     try {
-      // 查询是否存在数据,如果已经存在则验证失败
       const repo = this.dataSource.getRepository(condition.entity)
 
       // 如果没有传自定义的错误信息，则尝试获取该字段的 comment 作为信息提示
@@ -61,6 +63,7 @@ export class UniqueConstraint implements ValidatorConstraintInterface {
       // 在查询时排除指定 ID 的记录 eg: 编辑操作, 排除自身
       const andWhere = Number.isInteger(operateId) ? { id: Not(operateId) } : {}
 
+      // 查询是否存在数据, 如果已经存在则验证失败
       const res = await repo.findOne({
         where: { [condition.field]: value, ...andWhere }
       })
@@ -81,16 +84,11 @@ export class UniqueConstraint implements ValidatorConstraintInterface {
   }
 }
 
-function IsUnique(
-  entity: ObjectType<any>,
-  validationOptions?: ValidationOptions
-): (object: Record<string, any>, propertyName: string) => void
-
-function IsUnique(
-  condition: Params,
-  validationOptions?: ValidationOptions
-): (object: Record<string, any>, propertyName: string) => void
-
+/**
+ * @param {ObjectType} params
+ * 方式一：直接传入实体类 @IsUnique(UserEntity)
+ * 方式二：传入配置对象 @IsUnique({ entity: UserEntity, field: 'email' })
+ */
 function IsUnique(params: ObjectType<any> | Params, validationOptions?: ValidationOptions) {
   return (object: Record<string, any>, propertyName: string) => {
     registerDecorator({

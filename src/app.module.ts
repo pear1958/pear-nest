@@ -31,6 +31,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
         mount: true,
         setup: (cls, context) => {
           const req = context.switchToHttp().getRequest()
+          // 路由参数
           if (req.params?.id && req.body) {
             // 供自定义参数验证器(UniqueConstraint)使用
             const id = req.params.id || req.body.id
