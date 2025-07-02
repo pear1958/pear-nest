@@ -1,6 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm'
 
-// 在实际应用中，create_by 和 update_by 列的值一般是在应用程序的业务逻辑中手动设置的
+// migration:generate 命令用于根据实体类（Entity）的变化自动生成迁移文件。
+// 它会对比当前数据库的结构和实体类的定义，找出差异并生成相应的 SQL 语句，然后将这些语句写入迁移文件
 
 export class UpdateTable2001717007831711 implements MigrationInterface {
   name = 'UpdateTable2001717007831711'
