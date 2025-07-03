@@ -57,7 +57,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
     // 使用 NestJS 的内置令牌 APP_INTERCEPTOR 将 TransformInterceptor 注册为 全局拦截器
     { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
     // 全局 token 路由守卫
-    // { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard }
   ]
 })
