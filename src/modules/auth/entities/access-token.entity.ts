@@ -8,7 +8,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn
 } from 'typeorm'
-import { UserEntity } from '@/modules/user/user.entity'
+import { UserEntity } from '@/modules/system/user/user.entity'
 import { RefreshTokenEntity } from './refresh-token.entity'
 
 @Entity('user_access_tokens')

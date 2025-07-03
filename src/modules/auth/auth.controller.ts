@@ -5,7 +5,7 @@ import { ApiResult } from '@/common/decorator/api-result.decorator'
 import { LoginDto, LoginToken, RegisterDto } from './dto/auth.dto'
 import { CaptchaService } from './services/captcha.service'
 import { Public } from '@/common/decorator/public.decorator'
-import { UserService } from '../user/user.service'
+import { UserService } from '../system/user/user.service'
 // import { LocalGuard } from './guards/local.guard'
 
 // 只有当控制器方法尝试访问 req.user 时，才会真正触发 LocalStrategy 的 validate 方法

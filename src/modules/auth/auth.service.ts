@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common'
 import Redis from 'ioredis'
 import { isEmpty } from 'lodash'
-import { UserService } from '../user/user.service'
+import { UserService } from '../system/user/user.service'
 import { BusinessException } from '@/common/exception/business.exception'
 import { ErrorEnum } from '@/constant/error-code.constant'
 import { md5 } from '@/utils/crypto.util'
