@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserService } from './user.service'
 import { UserController } from './user.controller'
 import { UserEntity } from './user.entity'
-import { ParamConfigModule } from '../system/param-config/param-config.module'
+import { ParamConfigModule } from '../param-config/param-config.module'
 
 const providers = [UserService]
 
