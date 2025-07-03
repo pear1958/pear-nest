@@ -1,7 +1,7 @@
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Controller, Get, Query } from '@nestjs/common'
 import Redis from 'ioredis'
-import { isEmpty } from 'lodash-es'
+import { isEmpty } from 'lodash'
 import * as svgCaptcha from 'svg-captcha'
 import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
 import { ImageCaptchaDto } from '../dto/captcha.dto'

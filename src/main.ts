@@ -20,6 +20,7 @@ import { LoggingInterceptor } from './common/interceptor/logging.interceptor'
 import { isDev, isMainProcess } from './utils/env.util'
 import { LoggerService } from './shared/logger/logger.service'
 import { fastifyApp } from './common/adapter/fastify.adapter'
+import { RedisIoAdapter } from './common/adapter/socket.adapter'
 
 declare const module: any
 
@@ -87,6 +88,8 @@ async function bootstrap() {
       }
     })
   )
+
+  app.useWebSocketAdapter(new RedisIoAdapter(app))
 
   const printSwaggerInfo = setupSwagger(app, configService)
 

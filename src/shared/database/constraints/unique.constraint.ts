@@ -8,7 +8,7 @@ import {
   ValidationOptions
 } from 'class-validator'
 import { DataSource, Not, ObjectType } from 'typeorm'
-import { isNil, merge } from 'lodash-es'
+import { isNil, merge } from 'lodash'
 
 // 使用注解时传入的参数
 interface Params {

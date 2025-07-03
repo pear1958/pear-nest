@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm'
 import { EntityManager, Repository } from 'typeorm'
-import { isEmpty } from 'lodash-es'
+import { isEmpty } from 'lodash'
 import { menuList } from '@/mock/menuList'
 import { UserEntity } from './user.entity'
 import { UserDto } from './dto/user.dto'

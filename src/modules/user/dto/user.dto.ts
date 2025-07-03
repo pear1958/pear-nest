@@ -14,7 +14,7 @@ import {
   MinLength,
   ValidateIf
 } from 'class-validator'
-import { isEmpty } from 'lodash-es'
+import { isEmpty } from 'lodash'
 
 export class UserDto {
   @ApiProperty({ description: '头像' })

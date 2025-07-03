@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import Redis from 'ioredis'
-import { isEmpty } from 'lodash-es'
+import { isEmpty } from 'lodash'
 import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
 import { CaptchaLogService } from '@/modules/system/log/services/captcha-log.service'
 import { genCaptchaImgKey } from '@/helper/genRedisKey'
