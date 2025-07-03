@@ -17,7 +17,7 @@ export class MenuEntity extends CompleteEntity {
   permission: string // 对应控制器中定义的权限字符，如：@Perm('system:menu:list'))
 
   @Column({ type: 'tinyint', default: 0 })
-  type: number // 菜单类型 目录:菜单:权限
+  type: number // 菜单类型 菜单(0) 目录(1) 权限(2)
 
   @Column({ nullable: true, default: '' })
   icon: string // 菜单图标

@@ -8,6 +8,7 @@ import { MenuEntity } from './menu.entity'
 import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
 import { isEmpty, isNil } from 'lodash'
 import { deleteEmptyChildren } from '@/utils/list2tree.util'
+import { generateMenu } from '@/utils/permission.util'
 
 export const getMockMenuData = params => {
   // const mockStatus = ['all', 'open', 'processing', 'closed']
@@ -46,7 +47,7 @@ export class MenuService {
       order: { orderNo: 'ASC' }
     })
 
-    const menuList = menus
+    const menuList = generateMenu(menus)
 
     if (!isEmpty(menuList)) {
       deleteEmptyChildren(menuList)
