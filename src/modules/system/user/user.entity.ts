@@ -1,8 +1,18 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, Relation } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  Relation
+} from 'typeorm'
 import { Exclude } from 'class-transformer'
 import { CommonEntity } from '@/common/entity/common.entity'
 import { AccessTokenEntity } from '@/modules/auth/entities/access-token.entity'
 import { RoleEntity } from '../role/role.entity'
+import { DeptEntity } from '../dept/dept.entity'
 
 @Entity({ name: 'sys_user' })
 export class UserEntity extends CommonEntity {
@@ -45,9 +55,9 @@ export class UserEntity extends CommonEntity {
   })
   roles: Relation<RoleEntity[]>
 
-  // @ManyToOne(() => DeptEntity, dept => dept.users)
-  // @JoinColumn({ name: 'dept_id' })
-  // dept: Relation<DeptEntity>
+  @ManyToOne(() => DeptEntity, dept => dept.users)
+  @JoinColumn({ name: 'dept_id' })
+  dept: Relation<DeptEntity>
 
   // 通过accessToken的user字段 找到我
   @OneToMany(() => AccessTokenEntity, accessToken => accessToken.user, {

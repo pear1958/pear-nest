@@ -1,12 +1,16 @@
-import { Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { MenuService } from './menu.service'
 import { MenuController } from './menu.controller'
 import { MenuEntity } from './menu.entity'
+import { RoleModule } from '../role/role.module'
+
+const providers = [MenuService]
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MenuEntity])],
+  imports: [TypeOrmModule.forFeature([MenuEntity]), forwardRef(() => RoleModule)],
   controllers: [MenuController],
-  providers: [MenuService]
+  providers,
+  exports: [TypeOrmModule, ...providers]
 })
 export class MenuModule {}
