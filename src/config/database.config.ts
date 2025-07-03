@@ -29,6 +29,8 @@ export const databaseConfig = registerAs(dbRegToken, (): DataSourceOptions => da
 
 export type DatabaseConfig = ConfigType<typeof databaseConfig>
 
-// ------------------------------------
-// const dataSource = new DataSource(dataSourceOptions)
-// export default dataSource
+// ---------------- 供 migration:run 时使用 --------------------
+
+const dataSource = new DataSource(dataSourceOptions)
+
+export default dataSource
