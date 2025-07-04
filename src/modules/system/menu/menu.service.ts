@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common'
+import { Body, Get, Injectable, Post } from '@nestjs/common'
 import Redis from 'ioredis'
 import { Like, Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { menuList } from './mockData'
-import { MenuQueryDto } from './menu.dto'
+import { MenuDto, MenuQueryDto } from './menu.dto'
 import { MenuEntity } from './menu.entity'
 import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
 import { isEmpty, isNil } from 'lodash'
@@ -11,6 +11,8 @@ import { deleteEmptyChildren } from '@/utils/list2tree.util'
 import { generateMenu } from '@/utils/permission.util'
 import { paginate } from '@/helper/paginate'
 import { Pagination } from '@/helper/paginate/pagination'
+import { ApiOperation } from '@nestjs/swagger'
+import { CreatorPipe } from '@/common/pipe/creator.pipe'
 
 export const getMockMenuData = params => {
   // const mockStatus = ['all', 'open', 'processing', 'closed']
@@ -101,5 +103,18 @@ export class MenuService {
     } else {
       return { items, meta }
     }
+  }
+
+  @Post()
+  @ApiOperation({ summary: '新增菜单或权限' })
+  async create(@Body(CreatorPipe) dto: MenuDto): Promise<void> {
+    return null
+  }
+
+  @Get('permissions')
+  @ApiOperation({ summary: '获取后端定义的所有权限集' })
+  async getPermissions(): Promise<string[]> {
+    // return getDefinePermissions()
+    return []
   }
 }
