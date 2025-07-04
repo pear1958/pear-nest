@@ -8,6 +8,7 @@ function filterMenuToTable(menus: MenuEntity[], parentMenu) {
   menus.forEach(menu => {
     // 根级别菜单渲染
     let realMenu
+
     if (!parentMenu && !menu.parentId && menu.type === 1) {
       // 根菜单，查找该跟菜单下子菜单，因为可能会包含权限
       const childMenu = filterMenuToTable(menus, menu)
@@ -31,6 +32,7 @@ function filterMenuToTable(menus: MenuEntity[], parentMenu) {
     } else if (parentMenu && parentMenu.id === menu.parentId && menu.type === 2) {
       realMenu = { ...menu }
     }
+
     // add curent route
     if (realMenu) {
       realMenu.pid = menu.id

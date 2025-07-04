@@ -15,6 +15,7 @@ export class MenuController {
     return this.menuService.findAll(params)
   }
 
+  // http://localhost:3000/api/system/menu/temp/list
   @Get('temp/list')
   @ApiOperation({ summary: '获取所有菜单列表' })
   @ApiResult({ type: [MenuItemInfo] })

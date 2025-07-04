@@ -1,4 +1,5 @@
 SET NAMES utf8mb4;
+-- 临时禁用外键约束检查
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
