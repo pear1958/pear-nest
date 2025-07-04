@@ -24,3 +24,8 @@ export function genTokenBlacklistKey(tokenId: string) {
 export function genOnlineUserKey(tokenId: string) {
   return `${RedisKeys.ONLINE_USER_PREFIX}${String(tokenId)}` as const
 }
+
+// 生成 auth permissions redis key
+export function genAuthPermKey(val: string | number) {
+  return `${RedisKeys.AUTH_PERM_PREFIX}${String(val)}` as const
+}

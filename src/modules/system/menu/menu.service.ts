@@ -1,18 +1,20 @@
-import { Body, Get, Injectable, Post } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import Redis from 'ioredis'
 import { Like, Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
+import { isEmpty, isNil } from 'lodash'
 import { menuList } from './mockData'
-import { MenuDto, MenuQueryDto } from './menu.dto'
+import { MenuDto, MenuQueryDto, MenuType, MenuUpdateDto } from './menu.dto'
 import { MenuEntity } from './menu.entity'
 import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
-import { isEmpty, isNil } from 'lodash'
 import { deleteEmptyChildren } from '@/utils/list2tree.util'
 import { generateMenu } from '@/utils/permission.util'
 import { paginate } from '@/helper/paginate'
 import { Pagination } from '@/helper/paginate/pagination'
-import { ApiOperation } from '@nestjs/swagger'
-import { CreatorPipe } from '@/common/pipe/creator.pipe'
+import { BusinessException } from '@/common/exception/business.exception'
+import { ErrorEnum } from '@/constant/error-code.constant'
+import { genAuthPermKey, genAuthTokenKey } from '@/helper/genRedisKey'
+import { RedisKeys } from '@/constant/cache.constant'
 
 export const getMockMenuData = params => {
   // const mockStatus = ['all', 'open', 'processing', 'closed']
@@ -105,16 +107,59 @@ export class MenuService {
     }
   }
 
-  @Post()
-  @ApiOperation({ summary: '新增菜单或权限' })
-  async create(@Body(CreatorPipe) dto: MenuDto): Promise<void> {
-    return null
+  async check(dto: Partial<MenuDto>): Promise<void | never> {
+    // 无法在根目录下新建权限(前端传的数据基本不会走到这里)
+    if (dto.type === MenuType.PERMISSION && !dto.parentId) {
+      throw new BusinessException(ErrorEnum.PERMISSION_REQUIRES_PARENT)
+    }
+
+    // 目录 & parentId 存在
+    if (dto.type === MenuType.MENU && dto.parentId) {
+      const parent = await this.menuRepository.findOneBy({ id: dto.parentId })
+
+      if (isEmpty(parent)) {
+        // 前端传的数据基本不会走到这里
+        throw new BusinessException(ErrorEnum.PARENT_MENU_NOT_FOUND)
+      }
+
+      // 父节点选择 菜单 | 权限 时无法新建菜单
+      if ([MenuType.MENU, MenuType.PERMISSION].includes(parent?.type)) {
+        throw new BusinessException(ErrorEnum.ILLEGAL_OPERATION_DIRECTORY_PARENT)
+      }
+    }
   }
 
-  @Get('permissions')
-  @ApiOperation({ summary: '获取后端定义的所有权限集' })
-  async getPermissions(): Promise<string[]> {
-    // return getDefinePermissions()
+  async create(menu: MenuDto): Promise<void> {
+    await this.menuRepository.save(menu)
+  }
+
+  /**
+   * 获取当前用户的所有权限
+   */
+  async getPermissions(uid: number): Promise<string[]> {
     return []
+  }
+
+  /**
+   * 刷新所有在线用户的权限
+   */
+  async refreshOnlineUserPerms(): Promise<void> {
+    const onlineUserIds: string[] = await this.redis.keys(genAuthTokenKey('*'))
+
+    if (!onlineUserIds?.length) return
+
+    const promiseArr = onlineUserIds
+      .map(i => Number.parseInt(i.split(RedisKeys.AUTH_TOKEN_PREFIX)[1]))
+      .filter(i => i)
+      .map(async uid => {
+        const perms = await this.getPermissions(uid)
+        await this.redis.set(genAuthPermKey(uid), JSON.stringify(perms))
+      })
+
+    await Promise.all(promiseArr)
+  }
+
+  async update(id: number, menu: MenuUpdateDto): Promise<void> {
+    await this.menuRepository.update(id, menu)
   }
 }

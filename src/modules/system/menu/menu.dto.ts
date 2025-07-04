@@ -12,7 +12,7 @@ import {
 import { OperatorDto } from '@/common/dto/operator.dto'
 import { PagerDto } from '@/common/dto/pager.dto'
 
-enum MenuType {
+export enum MenuType {
   MENU = 0, // 菜单
   MENU_GROUP = 1, // 目录
   PERMISSION = 2 // 权限
@@ -99,6 +99,6 @@ export class MenuDto extends OperatorDto {
   component?: string
 }
 
-// export class MenuQueryDto extends PartialType(MenuDto) {}
-
 export class MenuQueryDto extends IntersectionType(PagerDto, PartialType(MenuDto)) {}
+
+export class MenuUpdateDto extends PartialType(MenuDto) {}
