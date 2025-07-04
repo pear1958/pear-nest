@@ -11,6 +11,7 @@ import { SocketModule } from './socket/socket.module'
 import config from './config'
 import { AllExceptionFilter } from './common/filter/all-exception.filter'
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
+import { RbacGuard } from './modules/auth/guards/rbac.guard'
 import { TimeoutInterceptor } from './common/interceptor/timeout.interceptor'
 
 @Module({
@@ -60,6 +61,8 @@ import { TimeoutInterceptor } from './common/interceptor/timeout.interceptor'
     { provide: APP_INTERCEPTOR, useFactory: () => new TimeoutInterceptor(15 * 1000) },
     // 全局 token 路由守卫
     // { provide: APP_GUARD, useClass: JwtAuthGuard },
+    // 接口操作权限守卫
+    { provide: APP_GUARD, useClass: RbacGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard }
   ]
 })
