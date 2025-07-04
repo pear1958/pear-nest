@@ -9,6 +9,8 @@ import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
 import { isEmpty, isNil } from 'lodash'
 import { deleteEmptyChildren } from '@/utils/list2tree.util'
 import { generateMenu } from '@/utils/permission.util'
+import { paginate } from '@/helper/paginate'
+import { Pagination } from '@/helper/paginate/pagination'
 
 export const getMockMenuData = params => {
   // const mockStatus = ['all', 'open', 'processing', 'closed']
@@ -55,5 +57,49 @@ export class MenuService {
     }
 
     return []
+  }
+
+  async list2({
+    page,
+    pageSize,
+    name,
+    path,
+    permission,
+    component,
+    status
+  }: MenuQueryDto): Promise<Pagination<MenuEntity>> {
+    const queryBuilder = this.menuRepository.createQueryBuilder('menu')
+
+    const queryParams = {
+      name,
+      path,
+      permission,
+      component,
+      status
+    }
+
+    // 遍历查询参数对象，动态添加查询条件
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (isNil(value)) return
+
+      const [query, parameters] =
+        typeof value === 'string'
+          ? [`menu.${key} LIKE :${key}`, { [key]: `%${value}%` }]
+          : [`menu.${key} = :${key}`, { [key]: value }] // status 是 number
+
+      queryBuilder.andWhere(query, parameters)
+    })
+
+    queryBuilder.orderBy('menu.orderNo', 'ASC')
+
+    const { items, meta } = await paginate(queryBuilder, { page, pageSize })
+    const menuList = generateMenu(items)
+
+    if (!isEmpty(menuList)) {
+      deleteEmptyChildren(menuList)
+      return { items: menuList, meta }
+    } else {
+      return { items, meta }
+    }
   }
 }

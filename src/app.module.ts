@@ -11,6 +11,7 @@ import { SocketModule } from './socket/socket.module'
 import config from './config'
 import { AllExceptionFilter } from './common/filter/all-exception.filter'
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
+import { TimeoutInterceptor } from './common/interceptor/timeout.interceptor'
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
     { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
     // 使用 NestJS 的内置令牌 APP_INTERCEPTOR 将 TransformInterceptor 注册为 全局拦截器
     { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
+    { provide: APP_INTERCEPTOR, useFactory: () => new TimeoutInterceptor(15 * 1000) },
     // 全局 token 路由守卫
     // { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard }

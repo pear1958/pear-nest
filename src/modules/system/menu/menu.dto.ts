@@ -1,4 +1,4 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger'
+import { ApiProperty, IntersectionType, PartialType } from '@nestjs/swagger'
 import {
   IsBoolean,
   IsIn,
@@ -10,6 +10,7 @@ import {
   ValidateIf
 } from 'class-validator'
 import { OperatorDto } from '@/common/dto/operator.dto'
+import { PagerDto } from '@/common/dto/pager.dto'
 
 enum MenuType {
   MENU = 0, // 菜单
@@ -98,4 +99,6 @@ export class MenuDto extends OperatorDto {
   component?: string
 }
 
-export class MenuQueryDto extends PartialType(MenuDto) {}
+// export class MenuQueryDto extends PartialType(MenuDto) {}
+
+export class MenuQueryDto extends IntersectionType(PagerDto, PartialType(MenuDto)) {}
