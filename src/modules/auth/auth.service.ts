@@ -6,11 +6,17 @@ import { BusinessException } from '@/common/exception/business.exception'
 import { ErrorEnum } from '@/constant/error-code.constant'
 import { md5 } from '@/utils/crypto.util'
 import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
-import { genAuthPVKey, genAuthTokenKey, genTokenBlacklistKey } from '@/helper/genRedisKey'
+import {
+  genAuthPVKey,
+  genAuthPermKey,
+  genAuthTokenKey,
+  genTokenBlacklistKey
+} from '@/helper/genRedisKey'
 import { SecurityConfig, securityConfig } from '@/config/security.config'
 import { TokenService } from './services/token.service'
 import { LoginLogService } from '../system/log/services/login-log.service'
 import { AppConfig, appConfig } from '@/config/app.config'
+import { MenuService } from '../system/menu/menu.service'
 
 @Injectable()
 export class AuthService {
@@ -18,6 +24,7 @@ export class AuthService {
     private userService: UserService,
     private tokenService: TokenService,
     private loginLogService: LoginLogService,
+    private menuService: MenuService,
     @InjectRedis() private readonly redis: Redis,
     @Inject(securityConfig.KEY) private securityConfig: SecurityConfig,
     @Inject(appConfig.KEY) private appConfig: AppConfig
@@ -104,5 +111,18 @@ export class AuthService {
     } else {
       await this.userService.forbidden(user.uid, accessToken)
     }
+  }
+
+  // 获取用户缓存的权限
+  async getPermissionsCache(uid: number): Promise<string[]> {
+    const permissionString = await this.redis.get(genAuthPermKey(uid))
+    return permissionString ? JSON.parse(permissionString) : []
+  }
+
+  /**
+   * 获取权限列表
+   */
+  async getPermissions(uid: number): Promise<string[]> {
+    return this.menuService.getPermissions(uid)
   }
 }
