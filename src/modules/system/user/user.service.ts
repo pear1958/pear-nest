@@ -345,7 +345,7 @@ export class UserService {
       }
 
       // 禁用状态
-      if (status === 0) {
+      if (status === UserStatus.Disable) {
         await this.forbidden(id)
       }
     })
