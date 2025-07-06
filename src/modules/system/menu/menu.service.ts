@@ -195,4 +195,43 @@ export class MenuService {
   async update(id: number, menu: MenuUpdateDto): Promise<void> {
     await this.menuRepository.update(id, menu)
   }
+
+  /**
+   * 根据菜单ID查找是否有关联角色
+   */
+  async checkRoleByMenuId(id: number): Promise<boolean> {
+    return !!(await this.menuRepository.findOne({
+      where: {
+        roles: {
+          id
+        }
+      }
+    }))
+  }
+
+  /**
+   * 查找当前菜单下的子菜单，目录以及菜单
+   */
+  async findChildMenus(mid: number): Promise<any> {
+    const childIdList: number[] = []
+    const menus = await this.menuRepository.findBy({ parentId: mid })
+
+    for (const menu of menus) {
+      // 子目录下是菜单或目录，继续往下级查找
+      if (menu.type !== MenuType.PERMISSION) {
+        const c = await this.findChildMenus(menu.id)
+        childIdList.push(c)
+      }
+      childIdList.push(menu.id)
+    }
+
+    return childIdList
+  }
+
+  /**
+   * 删除多项菜单
+   */
+  async deleteMenuItem(mids: number[]): Promise<void> {
+    await this.menuRepository.delete(mids)
+  }
 }

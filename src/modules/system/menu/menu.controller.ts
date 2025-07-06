@@ -1,5 +1,15 @@
-import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Query,
+  Delete,
+  BadRequestException
+} from '@nestjs/common'
 import { ApiOperation } from '@nestjs/swagger'
+import { flattenDeep } from 'lodash'
 import { MenuService } from './menu.service'
 import { ApiResult } from '@/common/decorator/api-result.decorator'
 import { MenuItemInfo } from './menu.model'
@@ -58,7 +68,30 @@ export class MenuController {
   @ApiOperation({ summary: '更新菜单或权限' })
   @Perm(permissions.UPDATE)
   async update(@IdParam() id: number, @Body(UpdaterPipe) dto: MenuUpdateDto): Promise<void> {
-    return null
+    await this.menuService.check(dto)
+    if (dto.parentId === -1 || !dto.parentId) {
+      dto.parentId = null
+    }
+    await this.menuService.update(id, dto)
+    // 如果是权限发生更改，则刷新所有在线用户的权限
+    if (dto.type === MenuType.PERMISSION) {
+      await this.menuService.refreshOnlineUserPerms()
+    }
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: '删除菜单或权限' })
+  @Perm(permissions.DELETE)
+  async delete(@IdParam() id: number): Promise<void> {
+    if (await this.menuService.checkRoleByMenuId(id)) {
+      throw new BadRequestException('该菜单存在关联角色，无法删除')
+    }
+
+    // 如果有子目录，一并删除
+    const childIdList = await this.menuService.findChildMenus(id)
+    await this.menuService.deleteMenuItem(flattenDeep([id, childIdList]))
+    // 刷新在线用户权限
+    await this.menuService.refreshOnlineUserPerms()
   }
 
   @Get('permissions')
