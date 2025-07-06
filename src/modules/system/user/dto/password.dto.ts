@@ -15,3 +15,16 @@ export class PasswordUpdateDto {
   })
   newPassword: string
 }
+
+export class UserPasswordDto {
+  // @ApiProperty({ description: '管理员/用户ID' })
+  // @IsEntityExist(UserEntity, { message: '用户不存在' })
+  // @IsInt()
+  // id: number
+
+  @ApiProperty({ description: '更改后的密码' })
+  @Matches(/^\S*(?=\S{6})(?=\S*\d)(?=\S*[A-Z])\S*$/i, {
+    message: '密码格式不正确'
+  })
+  password: string
+}

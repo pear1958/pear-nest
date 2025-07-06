@@ -1,24 +1,32 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm'
-import { EntityManager, Repository } from 'typeorm'
-import { isEmpty } from 'lodash'
+import { EntityManager, In, Like, Repository } from 'typeorm'
+import { isEmpty, isNil } from 'lodash'
 import { menuList } from '@/mock/menuList'
 import { UserEntity } from './user.entity'
-import { UserDto } from './dto/user.dto'
+import { UserDto, UserQueryDto, UserUpdateDto } from './dto/user.dto'
 import { BusinessException } from '@/common/exception/business.exception'
 import { ErrorEnum } from '@/constant/error-code.constant'
 import { randomValue } from '@/utils/index.util'
 import { md5 } from '@/utils/crypto.util'
 import { ParamConfigService } from '../param-config/param-config.service'
-import { SYS_USER_INITPASSWORD } from '@/constant/system.constant'
+import { ROOT_ROLE_ID, SYS_USER_INITPASSWORD } from '@/constant/system.constant'
 import { RegisterDto } from '@/modules/auth/dto/auth.dto'
 import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
 import Redis from 'ioredis'
-import { genAuthPVKey, genAuthTokenKey, genOnlineUserKey } from '@/helper/genRedisKey'
+import {
+  genAuthPVKey,
+  genAuthPermKey,
+  genAuthTokenKey,
+  genOnlineUserKey
+} from '@/helper/genRedisKey'
 import { AccessTokenEntity } from '@/modules/auth/entities/access-token.entity'
 import { AccountInfo } from './user.model'
 import { AccountUpdateDto } from '@/modules/auth/dto/account.dto'
 import { PasswordUpdateDto } from './dto/password.dto'
+import { Pagination } from '@/helper/paginate/pagination'
+import { paginate } from '@/helper/paginate'
+import { RoleEntity } from '../role/role.entity'
 
 enum UserStatus {
   Disable = 0,
@@ -31,19 +39,14 @@ export class UserService {
     @InjectRedis() private readonly redis: Redis,
     @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
     @InjectEntityManager() private entityManager: EntityManager,
-    private readonly paramConfigService: ParamConfigService
+    private readonly paramConfigService: ParamConfigService,
+    @InjectRepository(RoleEntity) private readonly roleRepository: Repository<RoleEntity>
   ) {}
 
   /**
    * 增加系统用户, 如果返回 false 则表示已存在该用户
    */
-  async create({
-    username,
-    password,
-    // roleIds,
-    deptId,
-    ...data
-  }: UserDto): Promise<void> {
+  async create({ username, password, roleIds, deptId, ...data }: UserDto): Promise<void> {
     const existed = await this.userRepository.findOneBy({
       username
     })
@@ -67,8 +70,8 @@ export class UserService {
         username,
         password,
         ...data,
-        psalt: salt
-        // roles: await this.roleRepository.findBy({ id: In(roleIds) }),
+        psalt: salt,
+        roles: await this.roleRepository.findBy({ id: In(roleIds) })
         // dept: await DeptEntity.findOneBy({ id: deptId }),
       })
 
@@ -112,12 +115,31 @@ export class UserService {
   async forbidden(uid: number, accessToken?: string): Promise<void> {
     await this.redis.del(genAuthPVKey(uid))
     await this.redis.del(genAuthTokenKey(uid))
-    // await this.redis.del(genAuthPermKey(uid))
+    await this.redis.del(genAuthPermKey(uid))
     if (accessToken) {
       const token = await AccessTokenEntity.findOne({
         where: { value: accessToken }
       })
       this.redis.del(genOnlineUserKey(token.id))
+    }
+  }
+
+  /**
+   * 禁用多个用户
+   */
+  async multiForbidden(uids: number[]): Promise<void> {
+    if (uids) {
+      const pvs: string[] = []
+      const ts: string[] = []
+      const ps: string[] = []
+      uids.forEach(uid => {
+        pvs.push(genAuthPVKey(uid))
+        ts.push(genAuthTokenKey(uid))
+        ps.push(genAuthPermKey(uid))
+      })
+      await this.redis.del(pvs)
+      await this.redis.del(ts)
+      await this.redis.del(ps)
     }
   }
 
@@ -226,5 +248,127 @@ export class UserService {
         status: UserStatus.Enabled
       })
       .getOne()
+  }
+
+  /**
+   * 查询用户列表
+   */
+  async list({
+    page,
+    pageSize,
+    username,
+    nickname,
+    deptId,
+    email,
+    status
+  }: UserQueryDto): Promise<Pagination<UserEntity>> {
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.dept', 'dept')
+      .leftJoinAndSelect('user.roles', 'role')
+      // .where('user.id NOT IN (:...ids)', { ids: [rootUserId, uid] })
+      .where({
+        ...(username ? { username: Like(`%${username}%`) } : null),
+        ...(nickname ? { nickname: Like(`%${nickname}%`) } : null),
+        ...(email ? { email: Like(`%${email}%`) } : null),
+        ...(!isNil(status) ? { status } : null)
+      })
+
+    if (deptId) queryBuilder.andWhere('dept.id = :deptId', { deptId })
+
+    return paginate<UserEntity>(queryBuilder, {
+      page,
+      pageSize
+    })
+  }
+
+  /**
+   * 查找用户信息
+   * @param id 用户id
+   */
+  async info(id: number): Promise<UserEntity> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.roles', 'roles')
+      .leftJoinAndSelect('user.dept', 'dept')
+      .where('user.id = :id', { id })
+      .getOne()
+    delete user.password
+    delete user.psalt
+    return user
+  }
+
+  /**
+   * 直接更改密码
+   */
+  async forceUpdatePassword(uid: number, password: string): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: uid })
+    const newPassword = md5(`${password}${user.psalt}`)
+    await this.userRepository.update({ id: uid }, { password: newPassword })
+    await this.upgradePasswordV(user.id)
+  }
+
+  /**
+   * 更新用户信息
+   */
+  async update(
+    id: number,
+    { password, deptId, roleIds, status, ...data }: UserUpdateDto
+  ): Promise<void> {
+    await this.entityManager.transaction(async manager => {
+      if (password) {
+        await this.forceUpdatePassword(id, password)
+      }
+
+      await manager.update(UserEntity, id, {
+        ...data,
+        status
+      })
+
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.roles', 'roles')
+        .leftJoinAndSelect('user.dept', 'dept')
+        .where('user.id = :id', { id })
+        .getOne()
+
+      if (roleIds) {
+        await manager
+          .createQueryBuilder()
+          .relation(UserEntity, 'roles')
+          .of(id)
+          .addAndRemove(roleIds, user.roles)
+      }
+
+      if (deptId) {
+        await manager.createQueryBuilder().relation(UserEntity, 'dept').of(id).set(deptId)
+      }
+
+      // 禁用状态
+      if (status === 0) {
+        await this.forbidden(id)
+      }
+    })
+  }
+
+  /**
+   * 查找超管的用户ID
+   */
+  async findRootUserId(): Promise<number> {
+    const user = await this.userRepository.findOneBy({
+      roles: { id: ROOT_ROLE_ID }
+    })
+    return user.id
+  }
+
+  /**
+   * 根据ID列表删除用户
+   */
+  async delete(userIds: number[]): Promise<void | never> {
+    const rootUserId = await this.findRootUserId()
+    if (userIds.includes(rootUserId)) {
+      throw new BadRequestException('不能删除root用户!')
+    }
+    await this.userRepository.delete(userIds)
   }
 }

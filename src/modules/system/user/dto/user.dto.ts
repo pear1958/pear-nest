@@ -1,4 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { PagerDto } from '@/common/dto/pager.dto'
+import { ApiProperty, IntersectionType, PartialType } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import {
   ArrayMaxSize,
@@ -36,11 +37,11 @@ export class UserDto {
   })
   password: string
 
-  // @ApiProperty({ description: '归属角色', type: [Number] })
-  // @ArrayNotEmpty()
-  // @ArrayMinSize(1)
-  // @ArrayMaxSize(3)
-  // roleIds: number[]
+  @ApiProperty({ description: '归属角色', type: [Number] })
+  @ArrayNotEmpty()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(3)
+  roleIds: number[]
 
   @ApiProperty({ description: '归属大区', type: Number })
   @Type(() => Number)
@@ -80,3 +81,17 @@ export class UserDto {
   @IsIn([0, 1])
   status: number
 }
+
+export class UserQueryDto extends IntersectionType(PagerDto<UserDto>, PartialType(UserDto)) {
+  @ApiProperty({ description: '归属大区', example: 1, required: false })
+  @IsInt()
+  @IsOptional()
+  deptId?: number
+
+  @ApiProperty({ description: '状态', example: 0, required: false })
+  @IsInt()
+  @IsOptional()
+  status?: number
+}
+
+export class UserUpdateDto extends PartialType(UserDto) {}
