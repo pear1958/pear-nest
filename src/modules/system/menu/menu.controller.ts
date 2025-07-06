@@ -50,6 +50,13 @@ export class MenuController {
     return this.menuService.list(dto)
   }
 
+  @Get(':id')
+  @ApiOperation({ summary: '获取菜单或权限信息' })
+  @Perm(permissions.READ)
+  async info(@IdParam() id: number) {
+    return this.menuService.getMenuItemAndParentInfo(id)
+  }
+
   @Post()
   @ApiOperation({ summary: '新增菜单或权限' })
   @Perm(permissions.CREATE)

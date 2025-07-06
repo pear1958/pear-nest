@@ -244,4 +244,19 @@ export class MenuService {
     if (!online) return
     await this.redis.set(genAuthPermKey(uid), JSON.stringify(perms))
   }
+
+  /**
+   * 获取某个菜单以及关联的父菜单的信息
+   */
+  async getMenuItemAndParentInfo(mid: number) {
+    const menu = await this.menuRepository.findOneBy({ id: mid })
+
+    let parentMenu: MenuEntity | undefined
+
+    if (menu && menu.parentId) {
+      parentMenu = await this.menuRepository.findOneBy({ id: menu.parentId })
+    }
+
+    return { menu, parentMenu }
+  }
 }
