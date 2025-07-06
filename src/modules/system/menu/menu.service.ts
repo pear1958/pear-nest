@@ -234,4 +234,14 @@ export class MenuService {
   async deleteMenuItem(mids: number[]): Promise<void> {
     await this.menuRepository.delete(mids)
   }
+
+  /**
+   * 刷新指定用户ID的权限
+   */
+  async refreshPerms(uid: number): Promise<void> {
+    const perms = await this.getPermissions(uid)
+    const online = await this.redis.get(genAuthTokenKey(uid))
+    if (!online) return
+    await this.redis.set(genAuthPermKey(uid), JSON.stringify(perms))
+  }
 }
