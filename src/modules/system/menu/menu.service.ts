@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import Redis from 'ioredis'
-import { Like, Repository } from 'typeorm'
+import { In, IsNull, Like, Not, Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
-import { isEmpty, isNil } from 'lodash'
+import { concat, isEmpty, isNil, uniq } from 'lodash'
 import { menuList } from './mockData'
 import { MenuDto, MenuQueryDto, MenuType, MenuUpdateDto } from './menu.dto'
 import { MenuEntity } from './menu.entity'
@@ -15,6 +15,7 @@ import { BusinessException } from '@/common/exception/business.exception'
 import { ErrorEnum } from '@/constant/error-code.constant'
 import { genAuthPermKey, genAuthTokenKey } from '@/helper/genRedisKey'
 import { RedisKeys } from '@/constant/cache.constant'
+import { RoleService } from '../role/role.service'
 
 export const getMockMenuData = params => {
   // const mockStatus = ['all', 'open', 'processing', 'closed']
@@ -28,7 +29,8 @@ export class MenuService {
   constructor(
     @InjectRedis() private redis: Redis,
     @InjectRepository(MenuEntity)
-    private menuRepository: Repository<MenuEntity>
+    private menuRepository: Repository<MenuEntity>,
+    private roleService: RoleService
   ) {}
 
   findAll(params: Recordable) {
@@ -113,16 +115,16 @@ export class MenuService {
       throw new BusinessException(ErrorEnum.PERMISSION_REQUIRES_PARENT)
     }
 
-    // 目录 & parentId 存在
+    // 菜单 & parentId 存在
     if (dto.type === MenuType.MENU && dto.parentId) {
       const parent = await this.menuRepository.findOneBy({ id: dto.parentId })
 
+      // 前端传的数据基本不会走到这里
       if (isEmpty(parent)) {
-        // 前端传的数据基本不会走到这里
         throw new BusinessException(ErrorEnum.PARENT_MENU_NOT_FOUND)
       }
 
-      // 父节点选择 菜单 | 权限 时无法新建菜单
+      // 无法在 菜单 | 权限 下新建菜单
       if ([MenuType.MENU, MenuType.PERMISSION].includes(parent?.type)) {
         throw new BusinessException(ErrorEnum.ILLEGAL_OPERATION_DIRECTORY_PARENT)
       }
@@ -137,7 +139,38 @@ export class MenuService {
    * 获取当前用户的所有权限
    */
   async getPermissions(uid: number): Promise<string[]> {
-    return []
+    let permission: string[] = [] // ['system:menu:list', ...]
+    let sqlResult: any = null
+    const roleIds = await this.roleService.getRoleIdsByUser(uid)
+
+    // 用户有管理员角色
+    if (this.roleService.hasAdminRole(roleIds)) {
+      sqlResult = await this.menuRepository.findBy({
+        permission: Not(IsNull()),
+        type: In([MenuType.MENU_GROUP, MenuType.MENU, MenuType.PERMISSION])
+      })
+    } else {
+      if (isEmpty(roleIds)) return []
+      sqlResult = await this.menuRepository
+        .createQueryBuilder('menu')
+        .innerJoinAndSelect('menu.roles', 'role')
+        .andWhere('role.id IN (:...roleIds)', { roleIds })
+        .andWhere(`menu.type IN (${MenuType.MENU_GROUP},${MenuType.MENU},${MenuType.PERMISSION})`)
+        .andWhere('menu.permission IS NOT NULL')
+        .getMany()
+    }
+
+    if (!isEmpty(sqlResult)) {
+      sqlResult.forEach((item: Recordable) => {
+        if (item.permission) {
+          permission = concat(permission, item.permission.split(','))
+        }
+      })
+      // 去重
+      permission = uniq(permission)
+    }
+
+    return permission
   }
 
   /**

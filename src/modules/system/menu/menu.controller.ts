@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common'
-import { MenuService } from './menu.service'
 import { ApiOperation } from '@nestjs/swagger'
+import { MenuService } from './menu.service'
 import { ApiResult } from '@/common/decorator/api-result.decorator'
 import { MenuItemInfo } from './menu.model'
 import { MenuDto, MenuQueryDto, MenuType, MenuUpdateDto } from './menu.dto'

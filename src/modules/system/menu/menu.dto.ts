@@ -13,8 +13,8 @@ import { OperatorDto } from '@/common/dto/operator.dto'
 import { PagerDto } from '@/common/dto/pager.dto'
 
 export enum MenuType {
-  MENU = 0, // 菜单
-  MENU_GROUP = 1, // 目录
+  MENU_GROUP = 0, // 目录
+  MENU = 1, // 菜单
   PERMISSION = 2 // 权限
 }
 
@@ -22,8 +22,8 @@ export class MenuDto extends OperatorDto {
   @ApiProperty({
     description: `
       菜单类型:
-      - 0: 菜单
-      - 1: 目录
+      - 0: 目录
+      - 1: 菜单
       - 2: 权限   
     `,
     enum: MenuType
