@@ -18,6 +18,8 @@ import { CaptchaController } from './controllers/captcha.controller'
 import { JwtStrategy } from './strategies/jwt.strategy'
 import { AccountController } from './controllers/account.controller'
 import { EmailController } from './controllers/email.controller'
+import { RoleModule } from '../system/role/role.module'
+import { MenuModule } from '../system/menu/menu.module'
 
 const providers = [AuthService, CaptchaService, TokenService]
 const strategies = [JwtStrategy] // LocalStrategy
@@ -40,6 +42,8 @@ const strategies = [JwtStrategy] // LocalStrategy
       inject: [ConfigService]
     }),
     UserModule,
+    RoleModule,
+    MenuModule,
     // 需要使用 验证码日志服务(CaptchaLogService)
     // 比如在 自己的 CaptchaService 服务中就会用到
     LogModule

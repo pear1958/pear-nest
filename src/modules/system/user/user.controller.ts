@@ -33,7 +33,7 @@ export const permissions = definePermission('system:user', {
   PASSWORD_RESET: 'pass:reset'
 } as const)
 
-@UseGuards(ResourceGuard)
+// @UseGuards(ResourceGuard)
 @Controller('user')
 export class UserController {
   constructor(

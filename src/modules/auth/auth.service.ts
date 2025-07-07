@@ -17,6 +17,7 @@ import { TokenService } from './services/token.service'
 import { LoginLogService } from '../system/log/services/login-log.service'
 import { AppConfig, appConfig } from '@/config/app.config'
 import { MenuService } from '../system/menu/menu.service'
+import { RoleService } from '../system/role/role.service'
 
 @Injectable()
 export class AuthService {
@@ -25,6 +26,7 @@ export class AuthService {
     private tokenService: TokenService,
     private loginLogService: LoginLogService,
     private menuService: MenuService,
+    private roleService: RoleService,
     @InjectRedis() private readonly redis: Redis,
     @Inject(securityConfig.KEY) private securityConfig: SecurityConfig,
     @Inject(appConfig.KEY) private appConfig: AppConfig
@@ -49,8 +51,10 @@ export class AuthService {
       throw new BusinessException(ErrorEnum.INVALID_USERNAME_PASSWORD)
     }
 
-    // to-do roles
-    const token = await this.tokenService.generateAccessToken(user.id, [])
+    const roleIds = await this.roleService.getRoleIdsByUser(user.id)
+    const roles = await this.roleService.getRoleValues(roleIds)
+
+    const token = await this.tokenService.generateAccessToken(user.id, roles)
 
     await this.redis.set(
       genAuthTokenKey(user.id),

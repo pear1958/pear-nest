@@ -8,7 +8,7 @@ import {
   Delete,
   BadRequestException
 } from '@nestjs/common'
-import { ApiOperation } from '@nestjs/swagger'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { RoleService } from './role.service'
 import { Perm, definePermission } from '@/common/decorator/permission.decorator'
 import { MenuService } from '../menu/menu.service'
@@ -18,6 +18,7 @@ import { RoleDto, RoleQueryDto, RoleUpdateDto } from './role.dto'
 import { IdParam } from '@/common/decorator/id-param.decorator'
 import { RoleInfo } from './role.model'
 import { UpdaterPipe } from '@/common/pipe/updater.pipe'
+import { ApiSecurityAuth } from '@/common/decorator/swagger.decorator'
 
 export const permissions = definePermission('system:role', {
   LIST: 'list',
@@ -27,6 +28,8 @@ export const permissions = definePermission('system:role', {
   DELETE: 'delete'
 } as const)
 
+@ApiTags('System - 角色模块')
+@ApiSecurityAuth()
 @Controller('role')
 export class RoleController {
   constructor(

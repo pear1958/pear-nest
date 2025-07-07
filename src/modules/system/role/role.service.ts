@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common'
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm'
 import { EntityManager, In, Like, Repository } from 'typeorm'
 import { isEmpty, isNil } from 'lodash'
 import { RoleEntity } from './role.entity'
@@ -7,13 +8,12 @@ import { RoleDto, RoleQueryDto, RoleUpdateDto } from './role.dto'
 import { Pagination } from '@/helper/paginate/pagination'
 import { paginate } from '@/helper/paginate'
 import { MenuEntity } from '../menu/menu.entity'
-import { InjectEntityManager } from '@nestjs/typeorm'
 
 @Injectable()
 export class RoleService {
   constructor(
-    private roleRepository: Repository<RoleEntity>,
-    private menuRepository: Repository<MenuEntity>,
+    @InjectRepository(RoleEntity) private roleRepository: Repository<RoleEntity>,
+    @InjectRepository(MenuEntity) private menuRepository: Repository<MenuEntity>,
     @InjectEntityManager() private entityManager: EntityManager
   ) {}
 
@@ -34,6 +34,13 @@ export class RoleService {
 
   hasAdminRole(rids: number[]): boolean {
     return rids.includes(ROOT_ROLE_ID)
+  }
+
+  async getRoleValues(ids: number[]): Promise<string[]> {
+    const rows = await this.roleRepository.findBy({
+      id: In(ids)
+    })
+    return rows.map(r => r.value)
   }
 
   /**
