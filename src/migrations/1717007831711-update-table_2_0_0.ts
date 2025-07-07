@@ -20,34 +20,34 @@ export class UpdateTable2001717007831711 implements MigrationInterface {
       `ALTER TABLE \`sys_role\` CHANGE \`value\` \`value\` varchar(255) NOT NULL COMMENT '角色标识'`
     )
     // 修改 sys_dict_type 表中的 create_by 列，将其设置为允许为空，并添加注释说明该列是创建者信息
-    // await queryRunner.query(
-    //   `ALTER TABLE \`sys_dict_type\` CHANGE \`create_by\` \`create_by\` int NULL COMMENT '创建者'`
-    // )
-    // await queryRunner.query(
-    //   `ALTER TABLE \`sys_dict_type\` CHANGE \`update_by\` \`update_by\` int NULL COMMENT '更新者'`
-    // )
-    // await queryRunner.query(
-    //   `ALTER TABLE \`sys_dict_item\` CHANGE \`create_by\` \`create_by\` int NULL COMMENT '创建者'`
-    // )
-    // await queryRunner.query(
-    //   `ALTER TABLE \`sys_dict_item\` CHANGE \`update_by\` \`update_by\` int NULL COMMENT '更新者'`
-    // )
+    await queryRunner.query(
+      `ALTER TABLE \`sys_dict_type\` CHANGE \`create_by\` \`create_by\` int NULL COMMENT '创建者'`
+    )
+    await queryRunner.query(
+      `ALTER TABLE \`sys_dict_type\` CHANGE \`update_by\` \`update_by\` int NULL COMMENT '更新者'`
+    )
+    await queryRunner.query(
+      `ALTER TABLE \`sys_dict_item\` CHANGE \`create_by\` \`create_by\` int NULL COMMENT '创建者'`
+    )
+    await queryRunner.query(
+      `ALTER TABLE \`sys_dict_item\` CHANGE \`update_by\` \`update_by\` int NULL COMMENT '更新者'`
+    )
   }
 
   // 执行相反的 ALTER TABLE 语句，将表结构恢复到迁移前的状态
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // await queryRunner.query(
-    //   `ALTER TABLE \`sys_dict_item\` CHANGE \`update_by\` \`update_by\` int NOT NULL COMMENT '更新者'`
-    // )
-    // await queryRunner.query(
-    //   `ALTER TABLE \`sys_dict_item\` CHANGE \`create_by\` \`create_by\` int NOT NULL COMMENT '创建者'`
-    // )
-    // await queryRunner.query(
-    //   `ALTER TABLE \`sys_dict_type\` CHANGE \`update_by\` \`update_by\` int NOT NULL COMMENT '更新者'`
-    // )
-    // await queryRunner.query(
-    //   `ALTER TABLE \`sys_dict_type\` CHANGE \`create_by\` \`create_by\` int NOT NULL COMMENT '创建者'`
-    // )
+    await queryRunner.query(
+      `ALTER TABLE \`sys_dict_type\` CHANGE \`update_by\` \`update_by\` int NOT NULL COMMENT '更新者'`
+    )
+    await queryRunner.query(
+      `ALTER TABLE \`sys_dict_type\` CHANGE \`create_by\` \`create_by\` int NOT NULL COMMENT '创建者'`
+    )
+    await queryRunner.query(
+      `ALTER TABLE \`sys_dict_item\` CHANGE \`update_by\` \`update_by\` int NOT NULL COMMENT '更新者'`
+    )
+    await queryRunner.query(
+      `ALTER TABLE \`sys_dict_item\` CHANGE \`create_by\` \`create_by\` int NOT NULL COMMENT '创建者'`
+    )
     await queryRunner.query(
       `ALTER TABLE \`sys_role\` CHANGE \`value\` \`value\` varchar(255) NOT NULL`
     )

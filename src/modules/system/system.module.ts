@@ -6,8 +6,19 @@ import { UserModule } from './user/user.module'
 import { LogModule } from './log/log.module'
 import { ParamConfigModule } from './param-config/param-config.module'
 import { DeptModule } from './dept/dept.module'
+import { DictTypeModule } from './dict-type/dict-type.module'
+import { DictItemModule } from './dict-item/dict-item.module'
 
-const modules = [UserModule, RoleModule, MenuModule, LogModule, ParamConfigModule, DeptModule]
+const modules = [
+  UserModule,
+  RoleModule,
+  MenuModule,
+  LogModule,
+  ParamConfigModule,
+  DeptModule,
+  DictTypeModule,
+  DictItemModule
+]
 
 @Module({
   imports: [
