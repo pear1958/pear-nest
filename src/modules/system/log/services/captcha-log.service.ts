@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { CaptchaLogEntity } from '../entities/captcha-log.entity'
+import { CaptchaLogQueryDto } from '../log.dto'
+import { paginate } from '@/helper/paginate'
 
 @Injectable()
 export class CaptchaLogService {
@@ -21,6 +23,17 @@ export class CaptchaLogService {
       code,
       provider,
       userId
+    })
+  }
+
+  list({ page, pageSize }: CaptchaLogQueryDto) {
+    const queryBuilder = this.captchaLogRepository
+      .createQueryBuilder('captcha_log')
+      .orderBy('captcha_log.id', 'DESC')
+
+    return paginate<CaptchaLogEntity>(queryBuilder, {
+      page,
+      pageSize
     })
   }
 }
