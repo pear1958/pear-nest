@@ -5,8 +5,9 @@ import { RoleModule } from './role/role.module'
 import { UserModule } from './user/user.module'
 import { LogModule } from './log/log.module'
 import { ParamConfigModule } from './param-config/param-config.module'
+import { DeptModule } from './dept/dept.module'
 
-const modules = [UserModule, RoleModule, MenuModule, LogModule, ParamConfigModule]
+const modules = [UserModule, RoleModule, MenuModule, LogModule, ParamConfigModule, DeptModule]
 
 @Module({
   imports: [

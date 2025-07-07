@@ -27,6 +27,7 @@ import { PasswordUpdateDto } from './dto/password.dto'
 import { Pagination } from '@/helper/paginate/pagination'
 import { paginate } from '@/helper/paginate'
 import { RoleEntity } from '../role/role.entity'
+import { DeptEntity } from '../dept/dept.entity'
 
 enum UserStatus {
   Disable = 0,
@@ -71,8 +72,8 @@ export class UserService {
         password,
         ...data,
         psalt: salt,
-        roles: await this.roleRepository.findBy({ id: In(roleIds) })
-        // dept: await DeptEntity.findOneBy({ id: deptId }),
+        roles: await this.roleRepository.findBy({ id: In(roleIds) }),
+        dept: await DeptEntity.findOneBy({ id: deptId })
       })
 
       const result = await manager.save(user)
