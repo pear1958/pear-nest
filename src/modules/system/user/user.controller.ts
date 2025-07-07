@@ -21,6 +21,7 @@ import { MenuService } from '../menu/menu.service'
 import { UserPasswordDto } from './dto/password.dto'
 import { Resource } from '@/common/decorator/resource.decorator'
 import { ResourceGuard } from '@/modules/auth/guards/resource.guard'
+import { menuList } from '@/mock/menuList'
 
 export const permissions = definePermission('system:user', {
   LIST: 'list',
@@ -97,6 +98,13 @@ export class UserController {
     await this.userService.forceUpdatePassword(id, dto.password)
   }
 
+  // ----------------------------------
+
+  @Post('login')
+  login() {
+    return true
+  }
+
   @Post('logout')
   logout() {
     return true
@@ -104,16 +112,26 @@ export class UserController {
 
   @Get('menu')
   getMenuList() {
-    return this.userService.findAll()
+    return menuList
   }
 
   @Get('info')
   getUserInfo() {
-    return this.userService.getUserInfo()
+    return {
+      userName: 'Admin',
+      mobile: '18270993095',
+      apartment: 'IT服务部',
+      avatar: 'xxx',
+      salary: 4500
+    }
   }
 
   @Get('button')
   getAuthButton() {
-    return this.userService.getAuthButton()
+    return {
+      home: ['test1', 'add', 'delete', 'edit', 'query', '一键导出', '一键删除'],
+      jsonForm: ['设备列表1', '设备列表2'],
+      jsonTable: ['add', 'delete', 'query', 'salary']
+    }
   }
 }
