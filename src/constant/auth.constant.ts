@@ -18,3 +18,5 @@ export const Roles = {
   USER: 'user'
   // GUEST: 'guest',
 } as const
+
+export const RESOURCE_KEY = '__resource_key__'

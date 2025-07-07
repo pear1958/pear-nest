@@ -7,7 +7,8 @@ import {
   Query,
   Delete,
   Param,
-  ParseArrayPipe
+  ParseArrayPipe,
+  UseGuards
 } from '@nestjs/common'
 import { ApiOperation, ApiParam } from '@nestjs/swagger'
 import { UserService } from './user.service'
@@ -18,6 +19,8 @@ import { Perm, definePermission } from '@/common/decorator/permission.decorator'
 import { IdParam } from '@/common/decorator/id-param.decorator'
 import { MenuService } from '../menu/menu.service'
 import { UserPasswordDto } from './dto/password.dto'
+import { Resource } from '@/common/decorator/resource.decorator'
+import { ResourceGuard } from '@/modules/auth/guards/resource.guard'
 
 export const permissions = definePermission('system:user', {
   LIST: 'list',
@@ -29,6 +32,7 @@ export const permissions = definePermission('system:user', {
   PASSWORD_RESET: 'pass:reset'
 } as const)
 
+@UseGuards(ResourceGuard)
 @Controller('user')
 export class UserController {
   constructor(
@@ -54,6 +58,7 @@ export class UserController {
   @Get(':id')
   @ApiOperation({ summary: '查询用户' })
   @Perm(permissions.READ)
+  @Resource(UserEntity)
   async read(@IdParam() id: number) {
     return this.userService.info(id)
   }
@@ -61,6 +66,7 @@ export class UserController {
   @Put(':id')
   @ApiOperation({ summary: '更新用户' })
   @Perm(permissions.UPDATE)
+  @Resource(UserEntity)
   async update(@IdParam() id: number, @Body() dto: UserUpdateDto): Promise<void> {
     await this.userService.update(id, dto)
     await this.menuService.refreshPerms(id)
@@ -75,6 +81,7 @@ export class UserController {
     schema: { oneOf: [{ type: 'string' }, { type: 'number' }] }
   })
   @Perm(permissions.DELETE)
+  @Resource(UserEntity)
   async delete(
     @Param('id', new ParseArrayPipe({ items: Number, separator: ',' })) ids: number[]
   ): Promise<void> {
@@ -85,6 +92,7 @@ export class UserController {
   @Post(':id/password')
   @ApiOperation({ summary: '更改用户密码' })
   @Perm(permissions.PASSWORD_UPDATE)
+  @Resource(UserEntity)
   async password(@IdParam() id: number, @Body() dto: UserPasswordDto): Promise<void> {
     await this.userService.forceUpdatePassword(id, dto.password)
   }
