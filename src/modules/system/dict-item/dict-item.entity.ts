@@ -7,7 +7,6 @@ import { DictTypeEntity } from '../dict-type/dict-type.entity'
 export class DictItemEntity extends CompleteEntity {
   @ManyToOne(() => DictTypeEntity, {
     cascade: true,
-    createForeignKeyConstraints: false,
     onDelete: 'CASCADE'
   })
   @JoinColumn({ name: 'type_id' })
