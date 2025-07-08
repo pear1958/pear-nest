@@ -8,6 +8,7 @@ import { ParamConfigModule } from './param-config/param-config.module'
 import { DeptModule } from './dept/dept.module'
 import { DictTypeModule } from './dict-type/dict-type.module'
 import { DictItemModule } from './dict-item/dict-item.module'
+import { OnlineModule } from './online/online.module'
 
 const modules = [
   UserModule,
@@ -17,7 +18,8 @@ const modules = [
   ParamConfigModule,
   DeptModule,
   DictTypeModule,
-  DictItemModule
+  DictItemModule,
+  OnlineModule
 ]
 
 @Module({
