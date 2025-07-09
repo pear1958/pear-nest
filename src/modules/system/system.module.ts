@@ -10,6 +10,7 @@ import { DictTypeModule } from './dict-type/dict-type.module'
 import { DictItemModule } from './dict-item/dict-item.module'
 import { OnlineModule } from './online/online.module'
 import { ServeModule } from './serve/serve.module'
+import { TaskModule } from './task/task.module'
 
 const modules = [
   UserModule,
@@ -21,7 +22,8 @@ const modules = [
   DictTypeModule,
   DictItemModule,
   OnlineModule,
-  ServeModule
+  ServeModule,
+  TaskModule
 ]
 
 @Module({
