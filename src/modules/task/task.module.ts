@@ -7,17 +7,10 @@ import { HttpRequestJob } from './jobs/http-request.job'
 
 const providers = [LogClearJob, EmailJob, HttpRequestJob]
 
-/**
- * auto create alias
- * {
- *    provide: 'LogClearMissionService',
- *    useExisting: LogClearMissionService,
- *  }
- */
 const createAliasProviders = (): ExistingProvider[] =>
   providers.map(p => ({
-    provide: p.name,
-    useExisting: p
+    provide: p.name, // eg: 'LogClearJob'
+    useExisting: p // eg: LogClearJob
   }))
 
 /**
