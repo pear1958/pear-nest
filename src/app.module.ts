@@ -4,7 +4,7 @@ import { ConfigModule } from '@nestjs/config'
 import { ThrottlerGuard } from '@nestjs/throttler'
 import { ClsModule } from 'nestjs-cls'
 import { TransformInterceptor } from './common/interceptor/transform.interceptor'
-import { DeviceModule, SystemModule, AuthModule } from './modules'
+import { DeviceModule, SystemModule, AuthModule, TaskModule } from './modules'
 import { SharedModule } from './shared/shared.module'
 import { DatabaseModule } from './shared/database/database.module'
 import { SocketModule } from './socket/socket.module'
@@ -48,7 +48,8 @@ import { TimeoutInterceptor } from './common/interceptor/timeout.interceptor'
     SocketModule,
     AuthModule,
     DeviceModule,
-    SystemModule
+    SystemModule,
+    TaskModule.forRoot()
   ],
   controllers: [],
   // 顺序: 请求从前到后依次执行, 响应从后到前依次执行
