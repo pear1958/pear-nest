@@ -44,7 +44,8 @@ const providers: Provider[] = [
 @Global()
 @Module({
   imports: [
-    // 配置 NestJS 缓存管理器, 使用 Redis 作为存储
+    // 使用 Redis 作为缓存管理器
+    // 若未自定义缓存管理器，默认使用内存缓存
     CacheModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService<ConfigKeyPaths>) => {

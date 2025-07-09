@@ -72,6 +72,7 @@
     "rxjs": "^7.8.1",
     "socket.io": "^4.8.1",
     "svg-captcha": "^1.4.0",
+    "systeminformation": "^5.27.7",
     "typeorm": "^0.3.24",
     "ua-parser-js": "^2.0.4",
     "winston": "^3.17.0",
