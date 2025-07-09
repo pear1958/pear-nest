@@ -52,8 +52,28 @@ export class OnlineService {
       time: row.created_at.toString()
     }
 
-    await this.redis.set(genOnlineUserKey(row.id), JSON.stringify(result), 'EX', exp)
+    await this.redis.set(
+      genOnlineUserKey(row.id),
+      JSON.stringify(result),
+      'EX',
+      30 * 24 * 60 * 60 * 1000
+    ) // exp
   }
+
+  async removeOnlineUser(value: string) {
+    const token = await AccessTokenEntity.findOne({
+      where: { value },
+      relations: ['user'],
+      cache: true
+    })
+    await this.redis.del(genOnlineUserKey(token?.id))
+  }
+
+  // 移除所有在线用户
+  // async clearOnlineUser() {
+  //   const keys = await this.redis.keys(genOnlineUserKey('*'))
+  //   await this.redis.del(keys)
+  // }
 
   /**
    * 在线用户列表
