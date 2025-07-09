@@ -9,14 +9,37 @@ import { UserEntity } from '@/modules/system/user/user.entity'
 import { RefreshTokenEntity } from '../entities/refresh-token.entity'
 import { generateUUID } from '@/utils/index.util'
 import { genOnlineUserKey } from '@/helper/genRedisKey'
+import { RoleService } from '@/modules/system/role/role.service'
 
 @Injectable()
 export class TokenService {
   constructor(
     @InjectRedis() private redis: Redis,
     @Inject(securityConfig.KEY) private securityConfig: SecurityConfig,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private roleService: RoleService
   ) {}
+
+  /**
+   * 生成新的RefreshToken并存入数据库
+   */
+  async generateRefreshToken(accessToken: AccessTokenEntity, now: dayjs.Dayjs): Promise<string> {
+    const refreshTokenPayload = {
+      uuid: generateUUID()
+    }
+
+    const refreshTokenSign = await this.jwtService.signAsync(refreshTokenPayload, {
+      secret: this.securityConfig.refreshSecret
+    })
+
+    const refreshToken = new RefreshTokenEntity()
+    refreshToken.value = refreshTokenSign
+    refreshToken.expired_at = now.add(this.securityConfig.refreshExpire, 'second').toDate()
+    refreshToken.accessToken = accessToken
+    await refreshToken.save()
+
+    return refreshTokenSign
+  }
 
   async generateAccessToken(uid: number, roles: string[] = []) {
     const payload: AuthUser = {
@@ -48,30 +71,7 @@ export class TokenService {
   }
 
   /**
-   * 生成新的RefreshToken并存入数据库
-   * @param accessToken
-   * @param now
-   */
-  async generateRefreshToken(accessToken: AccessTokenEntity, now: dayjs.Dayjs): Promise<string> {
-    const refreshTokenPayload = {
-      uuid: generateUUID()
-    }
-
-    const refreshTokenSign = await this.jwtService.signAsync(refreshTokenPayload, {
-      secret: this.securityConfig.refreshSecret
-    })
-
-    const refreshToken = new RefreshTokenEntity()
-    refreshToken.value = refreshTokenSign
-    refreshToken.expired_at = now.add(this.securityConfig.refreshExpire, 'second').toDate()
-    refreshToken.accessToken = accessToken
-    await refreshToken.save()
-
-    return refreshTokenSign
-  }
-
-  /**
-   * 验证Token是否正确,如果正确则返回所属用户对象
+   * 验证Token是否正确, 如果正确则返回所属用户对象
    */
   async verifyAccessToken(token: string): Promise<AuthUser> {
     return this.jwtService.verifyAsync(token)
@@ -90,7 +90,7 @@ export class TokenService {
         cache: true
       })
       isValid = Boolean(res)
-    } catch (error) {
+    } catch (err) {
       // xxxxxxxx
     }
 
@@ -110,5 +110,49 @@ export class TokenService {
       this.redis.del(genOnlineUserKey(accessToken.id))
       await accessToken.remove()
     }
+  }
+
+  /**
+   * 根据accessToken刷新AccessToken与RefreshToken
+   */
+  async refreshToken(accessToken: AccessTokenEntity) {
+    const { user, refreshToken } = accessToken
+    if (!refreshToken) return null
+
+    const now = dayjs()
+    // 判断refreshToken是否过期
+    if (now.isAfter(refreshToken.expired_at)) return null
+
+    const roleIds = await this.roleService.getRoleIdsByUser(user.id)
+    const roleValues = await this.roleService.getRoleValues(roleIds)
+
+    // 如果没过期则生成新的access_token和refresh_token
+    const token = await this.generateAccessToken(user.id, roleValues)
+
+    await accessToken.remove()
+
+    return token
+  }
+
+  // --------------------- 未用到 -----------------------
+  generateJwtSign(payload: any) {
+    const jwtSign = this.jwtService.sign(payload)
+    return jwtSign
+  }
+
+  /**
+   * 移除RefreshToken
+   */
+  async removeRefreshToken(value: string) {
+    const refreshToken = await RefreshTokenEntity.findOne({
+      where: { value },
+      relations: ['accessToken']
+    })
+    if (!refreshToken) return
+    if (refreshToken.accessToken) {
+      this.redis.del(genOnlineUserKey(refreshToken.accessToken.id))
+    }
+    await refreshToken.accessToken.remove()
+    await refreshToken.remove()
   }
 }

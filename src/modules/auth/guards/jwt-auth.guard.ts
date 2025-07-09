@@ -13,6 +13,7 @@ import { TokenService } from '../services/token.service'
 import { BusinessException } from '@/common/exception/business.exception'
 import { ErrorEnum } from '@/constant/error-code.constant'
 import { genTokenBlacklistKey } from '@/helper/genRedisKey'
+import { AccessTokenEntity } from '../entities/access-token.entity'
 
 /** @type {import('fastify').RequestGenericInterface} */
 interface RequestType {
@@ -78,6 +79,27 @@ export class JwtAuthGuard extends AuthGuard(AuthStrategy.JWT) {
 
       // 3.在 handleRequest 中 user 为 null 时会抛出 UnauthorizedException
       if (err instanceof UnauthorizedException) {
+        // ----------------------- 添加刷新 token 逻辑 ----------------------
+        // 判断是否是 token 过期错误
+        if (err.message === 'Unauthorized') {
+          const accessTokenEntity = await AccessTokenEntity.findOne({
+            where: { value: token },
+            relations: ['refreshToken', 'user']
+          })
+
+          if (accessTokenEntity) {
+            const newToken = await this.tokenService.refreshToken(accessTokenEntity)
+            if (newToken) {
+              // 更新请求中的 token
+              request.headers['authorization'] = `Bearer ${newToken.accessToken}`
+              // 重新验证新的 token
+              const newUser = await this.tokenService.verifyAccessToken(newToken.accessToken)
+              request['user'] = newUser
+              return true
+            }
+          }
+        }
+        // ---------------------------------------------
         // 登录无效，请重新登录
         throw new BusinessException(ErrorEnum.INVALID_LOGIN)
       }

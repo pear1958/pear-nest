@@ -103,11 +103,11 @@ export class AuthService {
    * 清除登录状态信息
    */
   async clearLoginStatus(user: AuthUser, accessToken: string): Promise<void> {
-    const exp = user.exp
+    const expire = user.exp
       ? (user.exp - Date.now() / 1000).toFixed(0)
       : this.securityConfig.jwtExprire
 
-    await this.redis.set(genTokenBlacklistKey(accessToken), accessToken, 'EX', exp)
+    await this.redis.set(genTokenBlacklistKey(accessToken), accessToken, 'EX', expire)
 
     if (this.appConfig.multiDeviceLogin) {
       // 每个端的token不一样, 删除一个token即可
