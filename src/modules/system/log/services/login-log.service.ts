@@ -71,4 +71,8 @@ export class LoginLogService {
       ...rest
     }
   }
+
+  async clearLog(): Promise<void> {
+    await this.loginLogRepository.clear()
+  }
 }
