@@ -13,6 +13,7 @@ import { AllExceptionFilter } from './common/filter/all-exception.filter'
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
 import { RbacGuard } from './modules/auth/guards/rbac.guard'
 import { TimeoutInterceptor } from './common/interceptor/timeout.interceptor'
+import { ToolsModule } from './modules/tools/tools.module'
 
 @Module({
   imports: [
@@ -49,7 +50,8 @@ import { TimeoutInterceptor } from './common/interceptor/timeout.interceptor'
     AuthModule,
     DeviceModule,
     SystemModule,
-    TaskModule.forRoot()
+    TaskModule.forRoot(),
+    ToolsModule
   ],
   controllers: [],
   // 顺序: 请求从前到后依次执行, 响应从后到前依次执行

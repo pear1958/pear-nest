@@ -7,8 +7,10 @@ import { CaptchaLogService } from './services/captcha-log.service'
 import { ApiResult } from '@/common/decorator/api-result.decorator'
 import { Pagination } from '@/helper/paginate/pagination'
 import { LoginLogInfo } from './log.model'
-import { CaptchaLogQueryDto, LoginLogQueryDto } from './log.dto'
+import { CaptchaLogQueryDto, LoginLogQueryDto, TaskLogQueryDto } from './log.dto'
 import { CaptchaLogEntity } from './entities/captcha-log.entity'
+import { TaskLogEntity } from './entities/task-log.entity'
+import { TaskLogService } from './services/task-log.service'
 
 export const permissions = definePermission('system:log', {
   TaskList: 'task:list',
@@ -22,7 +24,8 @@ export const permissions = definePermission('system:log', {
 export class LogController {
   constructor(
     private loginLogService: LoginLogService,
-    private captchaLogService: CaptchaLogService
+    private captchaLogService: CaptchaLogService,
+    private taskService: TaskLogService
   ) {}
 
   @Get('login/list')
@@ -41,8 +44,11 @@ export class LogController {
     return this.captchaLogService.list(dto)
   }
 
-  @Post()
-  create() {
-    return 'xxx'
+  @Get('task/list')
+  @ApiOperation({ summary: '查询任务日志列表' })
+  @ApiResult({ type: [TaskLogEntity], isPage: true })
+  @Perm(permissions.LogList)
+  async taskList(@Query() dto: TaskLogQueryDto) {
+    return this.taskService.list(dto)
   }
 }
