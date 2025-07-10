@@ -28,8 +28,7 @@ export class TaskService implements OnModuleInit {
   private logger = new Logger(TaskService.name)
 
   constructor(
-    @InjectRepository(TaskEntity)
-    private taskRepository: Repository<TaskEntity>,
+    @InjectRepository(TaskEntity) private taskRepository: Repository<TaskEntity>,
     // 从 NestJS 的依赖注入容器中获取名为 SYS_TASK_QUEUE_NAME 的队列实例
     @InjectQueue(SYS_TASK_QUEUE_NAME) private taskQueue: Queue,
     private moduleRef: ModuleRef,

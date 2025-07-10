@@ -12,10 +12,13 @@ import {
   getSize,
   saveLocalFile
 } from '@/utils/file.util'
+import { StorageEntity } from '../storage/storage.entity'
 
 @Injectable()
 export class UploadService {
-  // constructor(@InjectRepository(Storage) private storageRepository: Repository<Storage>) {}
+  constructor(
+    @InjectRepository(StorageEntity) private storageRepository: Repository<StorageEntity>
+  ) {}
 
   /**
    * 保存文件上传记录
@@ -36,15 +39,15 @@ export class UploadService {
 
     saveLocalFile(await file.toBuffer(), name, currentDate, type)
 
-    // await this.storageRepository.save({
-    //   name,
-    //   fileName,
-    //   extName,
-    //   path,
-    //   type,
-    //   size,
-    //   userId
-    // })
+    await this.storageRepository.save({
+      name,
+      fileName,
+      extName,
+      path,
+      type,
+      size,
+      userId
+    })
 
     return path
   }
