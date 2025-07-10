@@ -6,12 +6,16 @@ import { CaptchaLogEntity } from './entities/captcha-log.entity'
 import { LoginLogService } from './services/login-log.service'
 import { TaskLogService } from './services/task-log.service'
 import { LoginLogEntity } from './entities/login-log.entity'
+import { TaskLogEntity } from './entities/task-log.entity'
 import { UserModule } from '../user/user.module'
 
 const providers = [CaptchaLogService, LoginLogService, TaskLogService]
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CaptchaLogEntity, LoginLogEntity]), UserModule],
+  imports: [
+    TypeOrmModule.forFeature([CaptchaLogEntity, LoginLogEntity, TaskLogEntity]),
+    UserModule
+  ],
   controllers: [LogController],
   providers: [...providers],
   exports: [TypeOrmModule, ...providers]
