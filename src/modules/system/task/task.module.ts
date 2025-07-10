@@ -8,8 +8,10 @@ import { TaskEntity } from './task.entity'
 import { SYS_TASK_QUEUE_NAME, SYS_TASK_QUEUE_PREFIX } from './task.constant'
 import { ConfigKeyPaths } from '@/config'
 import { RedisConfig, redisRegToken } from '@/config/redis.config'
+import { LogModule } from '../log/log.module'
+import { TaskConsumer } from './task.processor'
 
-const providers = [TaskService]
+const providers = [TaskService, TaskConsumer]
 
 @Module({
   imports: [
@@ -21,7 +23,8 @@ const providers = [TaskService]
         redis: configService.get<RedisConfig>(redisRegToken),
         prefix: SYS_TASK_QUEUE_PREFIX
       })
-    })
+    }),
+    LogModule
   ],
   controllers: [TaskController],
   providers,
