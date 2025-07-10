@@ -4,6 +4,7 @@ import { dbRegToken, type DatabaseConfig, databaseConfig } from './database.conf
 import { RedisConfig, redisConfig, redisRegToken } from './redis.config'
 import { securityConfig, SecurityConfig, securityRegToken } from './security.config'
 import { mailerConfig, MailerConfig, mailerRegToken } from './mailer.config'
+import { OssConfig, ossConfig, ossRegToken } from './oss.config'
 
 export interface AllConfigType {
   [appRegToken]: AppConfig
@@ -11,7 +12,8 @@ export interface AllConfigType {
   [dbRegToken]: DatabaseConfig
   [redisRegToken]: RedisConfig
   [securityRegToken]: SecurityConfig
-  [mailerRegToken]: MailerConfig
+  [mailerRegToken]: MailerConfig,
+  [ossRegToken]: OssConfig,
 }
 
 export type ConfigKeyPaths = RecordNamePaths<AllConfigType>
@@ -22,5 +24,6 @@ export default {
   databaseConfig,
   redisConfig,
   securityConfig,
-  mailerConfig
+  mailerConfig,
+  ossConfig
 }

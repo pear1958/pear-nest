@@ -14,6 +14,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
 import { RbacGuard } from './modules/auth/guards/rbac.guard'
 import { TimeoutInterceptor } from './common/interceptor/timeout.interceptor'
 import { ToolsModule } from './modules/tools/tools.module'
+import { NetdiskModule } from './modules/netdisk/netdisk.module'
 
 @Module({
   imports: [
@@ -51,7 +52,8 @@ import { ToolsModule } from './modules/tools/tools.module'
     DeviceModule,
     SystemModule,
     TaskModule.forRoot(),
-    ToolsModule
+    ToolsModule,
+    NetdiskModule
   ],
   controllers: [],
   // 顺序: 请求从前到后依次执行, 响应从后到前依次执行
