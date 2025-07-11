@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid'
+import { customAlphabet, nanoid } from 'nanoid'
 
 export function generateUUID(size: number = 21): string {
   return nanoid(size)
@@ -16,4 +16,15 @@ export function randomValue(
   const len = dict.length
   while (i--) id += dict[(Math.random() * len) | 0]
   return id
+}
+
+/**
+ * 生成一个随机的值
+ */
+export function generateRandomValue(
+  length: number,
+  placeholder = '1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM'
+): string {
+  const customNanoid = customAlphabet(placeholder, length)
+  return customNanoid()
 }

@@ -213,6 +213,9 @@ importers:
       '@types/passport-jwt':
         specifier: ^4.0.1
         version: 4.0.1
+      '@types/qiniu':
+        specifier: ^7.0.1
+        version: 7.0.1
       '@types/supertest':
         specifier: ^6.0.2
         version: 6.0.3
@@ -1538,6 +1541,10 @@ packages:
 
   '@types/pug@2.0.10':
     resolution: {integrity: sha512-Sk/uYFOBAB7mb74XcpizmH0KOR2Pv3D2Hmrh1Dmy5BmK3MpdSa5kqZcg6EKBdklU0bFXX9gCfzvpnyUehrPIuA==}
+
+  '@types/qiniu@7.0.1':
+    resolution: {integrity: sha512-3n2X3Dl89rDPGu/zROIN+Dqu9yUWN5cBbDiWwE/gRbE1X+7BhoGM2/eyM4GMstdLa8w3Ns9yW1fGDPYALuWwMA==}
+    deprecated: This is a stub types definition for qiniu (https://github.com/qiniu/nodejs-sdk). qiniu provides its own type definitions, so you don't need @types/qiniu installed!
 
   '@types/qs@6.14.0':
     resolution: {integrity: sha512-eOunJqu0K1923aExK6y8p6fsihYEn/BYuQ4g0CxAAgFc4b/ZLN4CrsRZ55srTdqoiLzU2B2evC+apEIxprEzkQ==}
@@ -6712,6 +6719,12 @@ snapshots:
 
   '@types/pug@2.0.10':
     optional: true
+
+  '@types/qiniu@7.0.1':
+    dependencies:
+      qiniu: 7.14.0
+    transitivePeerDependencies:
+      - proxy-agent
 
   '@types/qs@6.14.0': {}
 

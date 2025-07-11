@@ -3,6 +3,8 @@ import { RouterModule } from '@nestjs/core'
 import { UserModule } from '../system/user/user.module'
 import { OverviewController } from './overview/overview.controller'
 import { OverviewService } from './overview/overview.service'
+import { ManageController } from './manage/manage.controller'
+import { ManageService } from './manage/manage.service'
 
 @Module({
   imports: [
@@ -14,7 +16,7 @@ import { OverviewService } from './overview/overview.service'
       }
     ])
   ],
-  controllers: [OverviewController],
-  providers: [OverviewService]
+  controllers: [OverviewController, ManageController],
+  providers: [OverviewService, ManageService]
 })
 export class NetdiskModule {}
