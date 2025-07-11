@@ -68,7 +68,7 @@ export class HealthController {
     return this.disk.checkStorage('disk', {
       // 已用磁盘存储空间不应超过磁盘已满空间的75%
       thresholdPercent: 0.75,
-      path: '/'
+      path: '/' // 类 Unix 系统（Linux、macOS、Unix） 的根路径格式
     })
   }
 }
