@@ -4,7 +4,9 @@
 
 ### 启动项目
 
-- npm run start:dev
+- npm run start `仅启动项目`
+
+- npm run start:dev `启动项目并热重载`
 
 - 快速生成模块 nest g resource dir
 
