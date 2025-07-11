@@ -15,6 +15,7 @@ import { RbacGuard } from './modules/auth/guards/rbac.guard'
 import { TimeoutInterceptor } from './common/interceptor/timeout.interceptor'
 import { ToolsModule } from './modules/tools/tools.module'
 import { NetdiskModule } from './modules/netdisk/netdisk.module'
+import { HealthModule } from './modules/health/health.module'
 
 @Module({
   imports: [
@@ -53,7 +54,8 @@ import { NetdiskModule } from './modules/netdisk/netdisk.module'
     SystemModule,
     TaskModule.forRoot(),
     ToolsModule,
-    NetdiskModule
+    NetdiskModule,
+    HealthModule
   ],
   controllers: [],
   // 顺序: 请求从前到后依次执行, 响应从后到前依次执行
