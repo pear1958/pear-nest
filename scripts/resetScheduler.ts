@@ -14,9 +14,11 @@ const job = CronJob.from({
   /** 每天凌晨 4.30 恢复初始数据 */
   cronTime: '30 4 * * *',
   timeZone: 'Asia/Shanghai',
-  start: true,
+  // start: true, // 任务创建后会立即启动
   onTick() {
     runMigrationGenerate()
     console.log('Task executed daily at 4.30 AM:', new Date().toLocaleTimeString())
   }
 })
+
+job.start()

@@ -122,6 +122,9 @@ importers:
       fastify:
         specifier: 5.3.3
         version: 5.3.3
+      handlebars:
+        specifier: ^4.7.8
+        version: 4.7.8
       ioredis:
         specifier: ^5.6.1
         version: 5.6.1
@@ -152,6 +155,9 @@ importers:
       qiniu:
         specifier: ^7.14.0
         version: 7.14.0
+      qs:
+        specifier: ^6.14.0
+        version: 6.14.0
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -222,6 +228,9 @@ importers:
       '@types/qiniu':
         specifier: ^7.0.1
         version: 7.0.1
+      '@types/qs':
+        specifier: ^6.14.0
+        version: 6.14.0
       '@types/supertest':
         specifier: ^6.0.2
         version: 6.0.3
@@ -8834,7 +8843,6 @@ snapshots:
       wordwrap: 1.0.0
     optionalDependencies:
       uglify-js: 3.19.3
-    optional: true
 
   has-flag@4.0.0: {}
 
@@ -11572,8 +11580,7 @@ snapshots:
 
   word-wrap@1.2.5: {}
 
-  wordwrap@1.0.0:
-    optional: true
+  wordwrap@1.0.0: {}
 
   wrap-ansi@6.2.0:
     dependencies:
