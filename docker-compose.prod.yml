@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  nest-admin-server:
+    image: buqiyuan/nest-admin-server:stable
+    container_name: nest-admin-server
+    # 指定拉取镜像的策略，always 表示每次启动服务时都会尝试拉取最新的镜像
+    pull_policy: always
+    restart: always
+    env_file:
+      - .env
+      - .env.production
+    # 为容器添加额外的主机名映射，这里将 host.docker.internal 映射到宿主机的网关地址
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - '${APP_PORT}:${APP_PORT}'
+    networks:
+      - nest_admin_net
+
+networks:
+  nest_admin_net:
+    name: nest_admin_net

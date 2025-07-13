@@ -1,0 +1,108 @@
+# 指定 Docker Compose 文件的版本，这里使用的是版本 3
+version: '3'
+
+# 定义服务
+services:
+  # 定义前端服务，命名为 nest-admin-web
+  nest-admin-web:
+    # 指定使用的 Docker 镜像，这里使用的是 buqiyuan/vue3-antdv-admin:stable 镜像
+    image:
+      buqiyuan/vue3-antdv-admin:stable
+      # 为容器指定一个名称，方便后续管理和识别
+    container_name: nest-admin-web
+    # 定义数据卷挂载，将当前目录下的 deploy/web 目录挂载到容器内的 /etc/nginx/conf.d 目录
+    volumes:
+      - ./deploy/web:/etc/nginx/conf.d
+    # 定义端口映射，将宿主机的 80 端口映射到容器的 80 端口
+    ports:
+      - '80:80'
+    # 设置容器的重启策略为 always，表示无论容器因何原因停止，都会自动重启
+    restart: always
+    # 定义容器所属的网络，这里使用的是 nest_admin_net 网络
+    networks:
+      - nest_admin_net
+  # 定义 MySQL 数据库服务，命名为 mysql
+  mysql:
+    # 指定使用的 Docker 镜像，这里使用的是最新版本的 MySQL 镜像
+    image: mysql:latest
+    # 为容器指定一个名称，方便后续管理和识别
+    container_name: nest-admin-mysql
+    # 设置容器的重启策略为 always，表示无论容器因何原因停止，都会自动重启
+    restart: always
+    # 指定环境变量文件，这里使用 .env 和 .env.production 文件中的环境变量
+    env_file:
+      - .env
+      - .env.production
+    # 定义容器的环境变量，从环境变量文件中获取数据库相关配置
+    environment:
+      - MYSQL_HOST=${DB_HOST}
+      - MYSQL_PORT=${DB_PORT}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USERNAME=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    # 定义端口映射，将宿主机的 DB_PORT 端口映射到容器的 3306 端口
+    ports:
+      - '${DB_PORT}:3306'
+    # 定义容器启动时执行的命令，这里设置 MySQL 的字符集为 utf8mb4
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci # 设置utf8字符集
+    # 定义数据卷挂载，将当前目录下的 __data/mysql 目录挂载到容器内的 /var/lib/mysql 目录，用于持久化存储数据库数据
+    # 将当前目录下的 deploy/sql 目录挂载到容器内的 /docker-entrypoint-initdb.d 目录，用于初始化数据库
+    volumes:
+      - ./__data/mysql/:/var/lib/mysql/ # ./__data/mysql/ 路径可以替换成自己的路径
+      - ./deploy/sql/:/docker-entrypoint-initdb.d/ # 初始化的脚本，若 ./__data/mysql/ 文件夹存在数据，则不会执行初始化脚本
+    # 定义容器所属的网络，这里使用的是 nest_admin_net 网络
+    networks:
+      - nest_admin_net
+
+  # 定义 Redis 服务，命名为 redis
+  redis:
+    # 指定使用的 Docker 镜像，这里使用的是 Alpine 版本的 Redis 镜像
+    image: redis:alpine
+    container_name: nest-admin-redis
+    restart: always
+    env_file:
+      - .env
+      - .env.production
+    ports:
+      - '${REDIS_PORT}:6379'
+    # 定义容器启动时执行的命令，这里设置 Redis 的访问密码
+    command: >
+      --requirepass ${REDIS_PASSWORD}
+    networks:
+      - nest_admin_net
+
+  nest-admin-server:
+    # build: 从当前路径构建镜像
+    # 定义构建镜像的上下文和参数，从当前路径构建镜像，并传递 PROJECT_DIR 环境变量
+    build:
+      context: .
+      args:
+        - PROJECT_DIR=${PROJECT_DIR}
+    image: buqiyuan/nest-admin-server:stable
+    container_name: nest-admin-server
+    restart: always
+    env_file:
+      - .env
+      - .env.production
+    # 为容器添加额外的主机名映射，将 host.docker.internal 映射到宿主机的网关
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - '${APP_PORT}:${APP_PORT}'
+    # 定义数据卷挂载，将当前目录下的 logs 目录挂载到容器内的 PROJECT_DIR/logs 目录，用于持久化存储日志文件
+    volumes:
+      - ./logs/:${PROJECT_DIR}/logs/ # ./logs 日志文件挂载到容器外部
+    # 当前服务启动之前先要把depends_on指定的服务启动起来才行
+    # 定义服务的依赖关系，这里表示 nest-admin-server 服务启动之前需要先启动 mysql 和 redis 服务
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - nest_admin_net
+# 定义网络
+networks:
+  # 在服务里引用的名称
+  nest_admin_net:
+    # docker实际创建的网络名称
+    name: nest_admin_net
