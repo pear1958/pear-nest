@@ -11,6 +11,8 @@ import { genOnlineUserKey } from '@/helper/genRedisKey'
 import { BusinessException } from '@/common/exception/business.exception'
 import { ErrorEnum } from '@/constant/error-code.constant'
 import { getIpAddress } from '@/utils/ip.util'
+import { SseService } from '@/sse/sse.service'
+import { throttle } from 'lodash'
 
 @Injectable()
 export class OnlineService {
@@ -18,8 +20,17 @@ export class OnlineService {
     @InjectRedis() private redis: Redis,
     private readonly userService: UserService,
     private authService: AuthService,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    private sseService: SseService
   ) {}
+
+  /**
+   * 在线用户数量变动时，通知前端实时更新在线用户数量或列表, 3 秒内最多推送一次，避免频繁触发
+   */
+  updateOnlineUserCount = throttle(async () => {
+    const keys = await this.redis.keys(genOnlineUserKey('*'))
+    this.sseService.sendToAllUser({ type: 'updateOnlineUserCount', data: keys.length })
+  }, 3000)
 
   async addOnlineUser(value: string, ip: string, ua: string) {
     const row = await AccessTokenEntity.findOne({
@@ -58,6 +69,8 @@ export class OnlineService {
       'EX',
       30 * 24 * 60 * 60 * 1000
     ) // exp
+
+    this.updateOnlineUserCount()
   }
 
   async removeOnlineUser(value: string) {
@@ -67,6 +80,7 @@ export class OnlineService {
       cache: true
     })
     await this.redis.del(genOnlineUserKey(token?.id))
+    this.updateOnlineUserCount()
   }
 
   // 移除所有在线用户

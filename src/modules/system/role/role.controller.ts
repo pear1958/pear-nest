@@ -19,6 +19,7 @@ import { IdParam } from '@/common/decorator/id-param.decorator'
 import { RoleInfo } from './role.model'
 import { UpdaterPipe } from '@/common/pipe/updater.pipe'
 import { ApiSecurityAuth } from '@/common/decorator/swagger.decorator'
+import { SseService } from '@/sse/sse.service'
 
 export const permissions = definePermission('system:role', {
   LIST: 'list',
@@ -34,7 +35,8 @@ export const permissions = definePermission('system:role', {
 export class RoleController {
   constructor(
     private readonly roleService: RoleService,
-    private menuService: MenuService
+    private menuService: MenuService,
+    private sseService: SseService
   ) {}
 
   @Get()
@@ -66,6 +68,7 @@ export class RoleController {
   async update(@IdParam() id: number, @Body(UpdaterPipe) dto: RoleUpdateDto): Promise<void> {
     await this.roleService.update(id, dto)
     await this.menuService.refreshOnlineUserPerms()
+    this.sseService.noticeClientToUpdateMenusByRoleIds([id])
   }
 
   @Delete(':id')
@@ -78,5 +81,6 @@ export class RoleController {
     }
     await this.roleService.delete(id)
     await this.menuService.refreshOnlineUserPerms()
+    this.sseService.noticeClientToUpdateMenusByRoleIds([id])
   }
 }

@@ -16,6 +16,7 @@ import { ErrorEnum } from '@/constant/error-code.constant'
 import { genAuthPermKey, genAuthTokenKey } from '@/helper/genRedisKey'
 import { RedisKeys } from '@/constant/cache.constant'
 import { RoleService } from '../role/role.service'
+import { SseService } from '@/sse/sse.service'
 
 export const getMockMenuData = params => {
   // const mockStatus = ['all', 'open', 'processing', 'closed']
@@ -30,7 +31,8 @@ export class MenuService {
     @InjectRedis() private redis: Redis,
     @InjectRepository(MenuEntity)
     private menuRepository: Repository<MenuEntity>,
-    private roleService: RoleService
+    private roleService: RoleService,
+    private sseService: SseService
   ) {}
 
   findAll(params: Recordable) {
@@ -132,7 +134,8 @@ export class MenuService {
   }
 
   async create(menu: MenuDto): Promise<void> {
-    await this.menuRepository.save(menu)
+    const result = await this.menuRepository.save(menu)
+    this.sseService.noticeClientToUpdateMenusByMenuIds([result.id])
   }
 
   /**
@@ -176,7 +179,7 @@ export class MenuService {
   /**
    * 刷新所有在线用户的权限
    */
-  async refreshOnlineUserPerms(): Promise<void> {
+  async refreshOnlineUserPerms(isNoticeUser = true): Promise<void> {
     const onlineUserIds: string[] = await this.redis.keys(genAuthTokenKey('*'))
 
     if (!onlineUserIds?.length) return
@@ -187,13 +190,16 @@ export class MenuService {
       .map(async uid => {
         const perms = await this.getPermissions(uid)
         await this.redis.set(genAuthPermKey(uid), JSON.stringify(perms))
+        return uid
       })
 
-    await Promise.all(promiseArr)
+    const uids = await Promise.all(promiseArr)
+    this.sseService.noticeClientToUpdateMenusByUserIds(uids)
   }
 
   async update(id: number, menu: MenuUpdateDto): Promise<void> {
     await this.menuRepository.update(id, menu)
+    this.sseService.noticeClientToUpdateMenusByMenuIds([id])
   }
 
   /**
@@ -243,6 +249,7 @@ export class MenuService {
     const online = await this.redis.get(genAuthTokenKey(uid))
     if (!online) return
     await this.redis.set(genAuthPermKey(uid), JSON.stringify(perms))
+    this.sseService.noticeClientToUpdateMenusByUserIds([uid])
   }
 
   /**
