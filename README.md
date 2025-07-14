@@ -2,16 +2,6 @@
 
 - v22.16.0
 
-### 命令详解
-
-"docker:build:dev": "docker compose --env-file .env --env-file .env.development up --build"
-"docker:build": "docker compose --env-file .env --env-file .env.production up --build"
-"docker:prod:up": "docker compose -f docker-compose.prod.yml --env-file .env --env-file .env.production up -d --pull=always"
-"docker:up": "docker compose --env-file .env --env-file .env.production up -d --no-build"
-"docker:down": "docker compose --env-file .env --env-file .env.production down"
-"docker:rmi": "docker compose --env-file .env --env-file .env.production stop nest-admin-server && docker container rm nest-admin-server && docker rmi nest-admin-server"
-"docker:logs": "docker compose --env-file .env --env-file .env.production logs -f"
-
 ### 启动项目
 
 - npm run start `仅启动项目`
