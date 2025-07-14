@@ -24,4 +24,3 @@ dist-ssr
 *.sw?
 
 public/upload
-src/types/env.d.ts
