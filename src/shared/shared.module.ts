@@ -8,8 +8,6 @@ import { MailerModule } from './mailer/mailer.module'
 import { HelperModule } from './helper/helper.module'
 
 // 标记为全局模块, 其它模块无需导入即可使用其服务
-// 全局模块的注册是在应用启动时进行的，并不要求必须在 app.module.ts 中导入
-// 不过，通常建议在 app.module.ts 中导入全局模块, 提高代码的可读性
 @Global()
 @Module({
   imports: [
