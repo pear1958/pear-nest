@@ -17,6 +17,7 @@ import { ToolsModule } from './modules/tools/tools.module'
 import { NetdiskModule } from './modules/netdisk/netdisk.module'
 import { HealthModule } from './modules/health/health.module'
 import { TodoModule } from './modules/todo/todo.module'
+import { SseModule } from './sse/sse.module'
 
 @Module({
   imports: [
@@ -57,7 +58,8 @@ import { TodoModule } from './modules/todo/todo.module'
     ToolsModule,
     NetdiskModule,
     HealthModule,
-    TodoModule
+    TodoModule,
+    SseModule
   ],
   controllers: [],
   // 顺序: 请求从前到后依次执行, 响应从后到前依次执行
