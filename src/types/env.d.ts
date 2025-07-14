@@ -7,6 +7,7 @@ declare global {
       APP_PORT: '3000'
       APP_BASE_URL: 'http://localhost:${APP_PORT}'
       APP_PREFIX: 'api'
+      PROJECT_DIR: '/pear-admin'
       LOGGER_LEVEL: 'verbose'
       LOGGER_MAX_FILES: '31'
       MULTI_DEVICE_LOGIN: 'true'
