@@ -11,7 +11,7 @@ import { genOnlineUserKey } from '@/helper/genRedisKey'
 import { BusinessException } from '@/common/exception/business.exception'
 import { ErrorEnum } from '@/constant/error-code.constant'
 import { getIpAddress } from '@/utils/ip.util'
-import { SseService } from '@/sse/sse.service'
+import { SseService } from '@/modules/sse/sse.service'
 import { throttle } from 'lodash'
 
 @Injectable()

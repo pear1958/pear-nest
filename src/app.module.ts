@@ -17,7 +17,7 @@ import { ToolsModule } from './modules/tools/tools.module'
 import { NetdiskModule } from './modules/netdisk/netdisk.module'
 import { HealthModule } from './modules/health/health.module'
 import { TodoModule } from './modules/todo/todo.module'
-import { SseModule } from './sse/sse.module'
+import { SseModule } from './modules/sse/sse.module'
 
 @Module({
   imports: [
@@ -50,7 +50,7 @@ import { SseModule } from './sse/sse.module'
     }),
     SharedModule,
     DatabaseModule,
-    SocketModule,
+    // SocketModule,
     AuthModule,
     DeviceModule,
     SystemModule,

@@ -6,7 +6,9 @@ import {
   Body,
   Put,
   Delete,
-  BadRequestException
+  BadRequestException,
+  Inject,
+  forwardRef
 } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { RoleService } from './role.service'
@@ -19,7 +21,7 @@ import { IdParam } from '@/common/decorator/id-param.decorator'
 import { RoleInfo } from './role.model'
 import { UpdaterPipe } from '@/common/pipe/updater.pipe'
 import { ApiSecurityAuth } from '@/common/decorator/swagger.decorator'
-import { SseService } from '@/sse/sse.service'
+import { SseService } from '@/modules/sse/sse.service'
 
 export const permissions = definePermission('system:role', {
   LIST: 'list',
@@ -36,7 +38,7 @@ export class RoleController {
   constructor(
     private readonly roleService: RoleService,
     private menuService: MenuService,
-    private sseService: SseService
+    @Inject(forwardRef(() => SseService)) private sseService: SseService
   ) {}
 
   @Get()

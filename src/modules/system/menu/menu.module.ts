@@ -4,10 +4,9 @@ import { MenuService } from './menu.service'
 import { MenuController } from './menu.controller'
 import { MenuEntity } from './menu.entity'
 import { RoleModule } from '../role/role.module'
-import { SseModule } from '@/sse/sse.module'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MenuEntity]), forwardRef(() => RoleModule), SseModule],
+  imports: [TypeOrmModule.forFeature([MenuEntity]), forwardRef(() => RoleModule)],
   controllers: [MenuController],
   providers: [MenuService],
   exports: [TypeOrmModule, MenuService]

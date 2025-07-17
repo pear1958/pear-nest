@@ -16,7 +16,7 @@ import { ErrorEnum } from '@/constant/error-code.constant'
 import { genAuthPermKey, genAuthTokenKey } from '@/helper/genRedisKey'
 import { RedisKeys } from '@/constant/cache.constant'
 import { RoleService } from '../role/role.service'
-import { SseService } from '@/sse/sse.service'
+import { SseService } from '@/modules/sse/sse.service'
 
 export const getMockMenuData = params => {
   // const mockStatus = ['all', 'open', 'processing', 'closed']
