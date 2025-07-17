@@ -19,7 +19,8 @@
     "noFallthroughCasesInSwitch": false,
     "noImplicitAny": false,
     "declaration": true,
-    "outDir": "./dist",
+    "outDir": "./dist", // 编译输出目录
+    // "rootDir": "./src", // 源代码目录
     "removeComments": true,
     "sourceMap": true,
     // 即使模块没有声明默认导出，也允许使用默认导入语法
@@ -27,8 +28,12 @@
     // 允许使用默认导入语法导入 CommonJS 模块  仅影响类型检查, 不改变生成的代码
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
+  "include": [
+    "src/**/*.ts"
+  ],
   "exclude": [
     "node_modules",
     "scripts",

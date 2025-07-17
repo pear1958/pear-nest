@@ -19,8 +19,9 @@ const dataSourceOptions: DataSourceOptions = {
   // multipleStatements: currentScript === 'typeorm',
   entities: ['dist/modules/**/*.entity{.ts,.js}'],
   // TypeORM 在运行迁移操作时，使用的是编译后的 JavaScript 文件
-  migrations: ['dist/migrations/*{.ts,.js}']
-  // subscribers: ['dist/modules/**/*.subscriber{.ts,.js}']
+  migrations: ['dist/migrations/*{.ts,.js}'],
+  // subscribers: ['dist/modules/**/*.subscriber{.ts,.js}'],
+  multipleStatements: true
 }
 
 export const dbRegToken = 'database'
