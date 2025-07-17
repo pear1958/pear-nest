@@ -50,7 +50,7 @@ import { SseModule } from './modules/sse/sse.module'
     }),
     SharedModule,
     DatabaseModule,
-    // SocketModule,
+    SocketModule,
     AuthModule,
     DeviceModule,
     SystemModule,
