@@ -40,7 +40,8 @@ export class UploadController {
 
     for await (const file of files) {
       try {
-        const path = await this.uploadService.saveFile(file, user.uid)
+        // const path = await this.uploadService.saveFile(file, user.uid)
+        const path = await this.uploadService.saveFile(file, 1)
         filePaths.push(path)
         return {
           filePaths
