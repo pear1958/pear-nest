@@ -129,4 +129,11 @@ export class AuthService {
   async getPermissions(uid: number): Promise<string[]> {
     return this.menuService.getPermissions(uid)
   }
+
+  /**
+   * 获取菜单列表
+   */
+  async getMenus(uid: number) {
+    return this.menuService.getMenus(uid)
+  }
 }

@@ -34,7 +34,7 @@ export const permissions = definePermission('system:user', {
 } as const)
 
 // @UseGuards(ResourceGuard)
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(
     private readonly userService: UserService,

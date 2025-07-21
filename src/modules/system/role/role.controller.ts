@@ -33,7 +33,7 @@ export const permissions = definePermission('system:role', {
 
 @ApiTags('System - 角色模块')
 @ApiSecurityAuth()
-@Controller('role')
+@Controller('roles')
 export class RoleController {
   constructor(
     private readonly roleService: RoleService,

@@ -8,7 +8,7 @@ import { MenuDto, MenuQueryDto, MenuType, MenuUpdateDto } from './menu.dto'
 import { MenuEntity } from './menu.entity'
 import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
 import { deleteEmptyChildren } from '@/utils/list2tree.util'
-import { generateMenu } from '@/utils/permission.util'
+import { generateMenu, generatorRouters } from '@/utils/permission.util'
 import { paginate } from '@/helper/paginate'
 import { Pagination } from '@/helper/paginate/pagination'
 import { BusinessException } from '@/common/exception/business.exception'
@@ -265,5 +265,29 @@ export class MenuService {
     }
 
     return { menu, parentMenu }
+  }
+
+  /**
+   * 根据角色获取所有菜单
+   */
+  async getMenus(uid: number) {
+    const roleIds = await this.roleService.getRoleIdsByUser(uid)
+    let menus: MenuEntity[] = []
+
+    if (isEmpty(roleIds)) return generatorRouters([])
+
+    if (this.roleService.hasAdminRole(roleIds)) {
+      menus = await this.menuRepository.find({ order: { orderNo: 'ASC' } })
+    } else {
+      menus = await this.menuRepository
+        .createQueryBuilder('menu')
+        .innerJoinAndSelect('menu.roles', 'role')
+        .andWhere('role.id IN (:...roleIds)', { roleIds })
+        .orderBy('menu.order_no', 'ASC')
+        .getMany()
+    }
+
+    const menuList = generatorRouters(menus)
+    return menuList
   }
 }

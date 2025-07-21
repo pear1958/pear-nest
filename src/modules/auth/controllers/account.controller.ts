@@ -9,7 +9,7 @@ import { AuthService } from '../auth.service'
 import { AuthUser } from '../../../constant/auth-user.decorator'
 import { AllowAnon } from '../../../constant/allow-anon.decorator'
 import { ApiResult } from '@/common/decorator/api-result.decorator'
-import { AccountUpdateDto } from '../dto/account.dto'
+import { AccountMenus, AccountUpdateDto } from '../dto/account.dto'
 import { PasswordUpdateDto } from '@/modules/system/user/dto/password.dto'
 
 @ApiTags('Account - 账户模块')
@@ -50,5 +50,21 @@ export class AccountController {
   @AllowAnon()
   async password(@AuthUser() user: AuthUser, @Body() dto: PasswordUpdateDto): Promise<void> {
     await this.userService.updatePassword(user.uid, dto)
+  }
+
+  @Get('menus')
+  @ApiOperation({ summary: '获取菜单列表' })
+  @ApiResult({ type: [AccountMenus] })
+  @AllowAnon()
+  async menu(@AuthUser() user: AuthUser) {
+    return this.authService.getMenus(user.uid)
+  }
+
+  @Get('permissions')
+  @ApiOperation({ summary: '获取权限列表' })
+  @ApiResult({ type: [String] })
+  @AllowAnon()
+  async permissions(@AuthUser() user: AuthUser): Promise<string[]> {
+    return this.authService.getPermissions(user.uid)
   }
 }

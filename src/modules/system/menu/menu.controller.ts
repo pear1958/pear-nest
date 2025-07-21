@@ -31,7 +31,7 @@ export const permissions = definePermission('system:menu', {
   DELETE: 'delete'
 } as const)
 
-@Controller('menu')
+@Controller('menus')
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
