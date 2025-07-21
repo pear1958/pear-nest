@@ -21,7 +21,15 @@ import { MenuService } from '../menu/menu.service'
 import { UserPasswordDto } from './dto/password.dto'
 import { Resource } from '@/common/decorator/resource.decorator'
 import { ResourceGuard } from '@/modules/auth/guards/resource.guard'
-import { menuList } from '@/mock/menuList'
+import { mockEpAdminMenuList } from './mockEpAdminMenu'
+import { mockReactAdminMenu } from './mockReactAdminMenu'
+
+const getMockMenuData = params => {
+  // const mockStatus = ['all', 'open', 'processing', 'closed']
+  const { current, pageSize } = params
+  const startIndex = (current - 1) / pageSize
+  return mockReactAdminMenu.slice(startIndex, current * pageSize)
+}
 
 export const permissions = definePermission('system:user', {
   LIST: 'list',
@@ -34,7 +42,7 @@ export const permissions = definePermission('system:user', {
 } as const)
 
 // @UseGuards(ResourceGuard)
-@Controller('users')
+@Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -110,11 +118,6 @@ export class UserController {
     return true
   }
 
-  @Get('menu')
-  getMenuList() {
-    return menuList
-  }
-
   @Get('info')
   getUserInfo() {
     return {
@@ -133,5 +136,45 @@ export class UserController {
       jsonForm: ['设备列表1', '设备列表2'],
       jsonTable: ['add', 'delete', 'query', 'salary']
     }
+  }
+
+  @Get('react-admin-list')
+  findAll(@Query() params: Recordable) {
+    return {
+      list: getMockMenuData(params),
+      total: 10
+    }
+  }
+
+  @Get('ep-admin-list')
+  getEpAdminMenuList() {
+    return mockEpAdminMenuList
+  }
+
+  @Get('insurance/list')
+  getInsuranceList() {
+    return new Array(10).fill('').map((_, index) => {
+      return {
+        index,
+        id: Math.random(),
+        shopId: null,
+        shopName: '投保测试4S店',
+        benefitKey: 'SXX_2',
+        benefitName: '随心修',
+        vin: Math.random(),
+        plateNumber: null,
+        vehicleModel: '奥迪/A3新能源(进口)/2017款 Sportback e-tron 舒适型',
+        vehicleOwnerPhone: '15848725012',
+        vehicleOwnerName: '凉凉',
+        vehicleOwnerIdType: 'ID',
+        vehicleOwnerIdNo: '431224198912147726',
+        vehicleRegisterDate: '2025-02-21T00:00:00+0800',
+        vehiclePurchasePrice: 20,
+        vehicleInvoiceDate: '2025-02-21T00:00:00+0800',
+        status: 'INSURE_SUCCESS',
+        insureTime: '2025-02-21T13:45:53+0800',
+        effectDate: '2025-02-22T00:00:00+0800'
+      }
+    })
   }
 }

@@ -3,7 +3,6 @@ import Redis from 'ioredis'
 import { In, IsNull, Like, Not, Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { concat, isEmpty, isNil, uniq } from 'lodash'
-import { menuList } from './mockData'
 import { MenuDto, MenuQueryDto, MenuType, MenuUpdateDto } from './menu.dto'
 import { MenuEntity } from './menu.entity'
 import { InjectRedis } from '@/common/decorator/inject-redis.decorator'
@@ -18,13 +17,6 @@ import { RedisKeys } from '@/constant/cache.constant'
 import { RoleService } from '../role/role.service'
 import { SseService } from '@/modules/sse/sse.service'
 
-export const getMockMenuData = params => {
-  // const mockStatus = ['all', 'open', 'processing', 'closed']
-  const { current, pageSize } = params
-  const startIndex = (current - 1) / pageSize
-  return menuList.slice(startIndex, current * pageSize)
-}
-
 @Injectable()
 export class MenuService {
   constructor(
@@ -34,13 +26,6 @@ export class MenuService {
     private roleService: RoleService,
     private sseService: SseService
   ) {}
-
-  findAll(params: Recordable) {
-    return {
-      list: getMockMenuData(params),
-      total: 10
-    }
-  }
 
   /**
    * 获取所有菜单以及权限

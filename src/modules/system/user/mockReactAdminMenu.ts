@@ -1,4 +1,4 @@
-export const menuList = [
+export const mockReactAdminMenu = [
   {
     path: '/home',
     element: '/home/index',

@@ -23,7 +23,7 @@ export const permissions = definePermission('system:dept', {
 
 @ApiSecurityAuth()
 @ApiTags('System - 部门模块')
-@Controller('depts')
+@Controller('dept')
 export class DeptController {
   constructor(private readonly deptService: DeptService) {}
 

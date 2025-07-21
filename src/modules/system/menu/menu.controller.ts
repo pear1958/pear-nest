@@ -31,18 +31,12 @@ export const permissions = definePermission('system:menu', {
   DELETE: 'delete'
 } as const)
 
-@Controller('menus')
+@Controller('menu')
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
-  // 菜单管理
+  // http://localhost:3000/api/system/menu/list?page=1&pageSize=5
   @Get('list')
-  findAll(@Query() params: Recordable) {
-    return this.menuService.findAll(params)
-  }
-
-  // http://localhost:3000/api/system/menu/temp/list?page=1&pageSize=5
-  @Get('temp/list')
   @ApiOperation({ summary: '获取所有菜单列表' })
   @ApiResult({ type: [MenuItemInfo] })
   @Perm(permissions.LIST)
