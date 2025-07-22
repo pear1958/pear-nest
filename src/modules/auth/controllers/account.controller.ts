@@ -27,6 +27,7 @@ export class AccountController {
   @ApiOperation({ summary: '账户登出' })
   @AllowAnon()
   async logout(@AuthUser() user: AuthUser, @Req() req: FastifyRequest): Promise<void> {
+    // 前端: 204 data: ''
     await this.authService.clearLoginStatus(user, req.accessToken)
   }
 
