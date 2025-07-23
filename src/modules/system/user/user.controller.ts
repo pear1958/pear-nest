@@ -140,10 +140,11 @@ export class UserController {
 
   @Get('react-admin-list')
   findAll(@Query() params: Recordable) {
-    return {
-      list: getMockMenuData(params),
-      total: 10
-    }
+    // return {
+    //   list: getMockMenuData(params),
+    //   total: 10
+    // }
+    return mockReactAdminMenu
   }
 
   @Get('ep-admin-list')

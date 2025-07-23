@@ -32,7 +32,8 @@ export class DeptController {
   @ApiResult({ type: [DeptEntity] })
   @Perm(permissions.LIST)
   async list(@Query() dto: DeptQueryDto, @AuthUser('uid') uid: number): Promise<DeptEntity[]> {
-    return this.deptService.getDeptTree(uid, dto)
+    // return this.deptService.getDeptTree(uid, dto)
+    return this.deptService.getDeptTree(1, dto)
   }
 
   @Post()
