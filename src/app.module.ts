@@ -71,9 +71,9 @@ import { SseModule } from './modules/sse/sse.module'
     { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
     { provide: APP_INTERCEPTOR, useFactory: () => new TimeoutInterceptor(15 * 1000) },
     // 全局 token 路由守卫
-    // { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
     // 接口操作权限守卫
-    // { provide: APP_GUARD, useClass: RbacGuard },
+    { provide: APP_GUARD, useClass: RbacGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard }
   ]
 })

@@ -6,7 +6,6 @@ import { ApiSecurityAuth } from '@/common/decorator/swagger.decorator'
 import { definePermission, Perm } from '@/common/decorator/permission.decorator'
 import { AuthUser } from '@/constant/auth-user.decorator'
 import { FileUploadDto } from './upload.dto'
-import { MultipartFile } from '@fastify/multipart'
 
 export const permissions = definePermission('upload', {
   UPLOAD: 'upload'
@@ -32,24 +31,18 @@ export class UploadController {
     }
 
     // 只会获取并处理请求中的第一个文件
-    // const file = await req.file()
+    const file = await req.file()
 
-    // 处理多个文件
-    const files: AsyncIterableIterator<MultipartFile> = req.files()
-    const filePaths = []
-
-    for await (const file of files) {
-      try {
-        // const path = await this.uploadService.saveFile(file, user.uid)
-        const path = await this.uploadService.saveFile(file, 1)
-        filePaths.push(path)
-        return {
-          filePaths
-        }
-      } catch (err) {
-        console.log('err', err)
-        throw new BadRequestException('上传失败')
+    try {
+      console.log('user', user)
+      const path = await this.uploadService.saveFile(file, user.uid) 
+      return {
+        name: path,
+        path: 'https://t11.baidu.com/it/u=3756468295,271830728&fm=30&app=106&f=JPEG?w=312&h=208&s=0B25DD04E0B97F8C62A0F842030070B9'
       }
+    } catch (err) {
+      console.log('err', err)
+      throw new BadRequestException('上传失败')
     }
   }
 }
