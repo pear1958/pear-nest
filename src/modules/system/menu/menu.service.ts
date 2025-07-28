@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import Redis from 'ioredis'
-import { In, IsNull, Like, Not, Repository } from 'typeorm'
+import { In, IsNull, Like, Not, Repository, SelectQueryBuilder } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { concat, isEmpty, isNil, uniq } from 'lodash'
 import { MenuDto, MenuQueryDto, MenuType, MenuUpdateDto } from './menu.dto'
@@ -16,6 +16,7 @@ import { genAuthPermKey, genAuthTokenKey } from '@/helper/genRedisKey'
 import { RedisKeys } from '@/constant/cache.constant'
 import { RoleService } from '../role/role.service'
 import { SseService } from '@/modules/sse/sse.service'
+import { MenuItemInfo } from './menu.model'
 
 @Injectable()
 export class MenuService {
@@ -28,9 +29,72 @@ export class MenuService {
   ) {}
 
   /**
+   * 获取分页菜单列表（确保数据完整，与全量查询结构一致）
+   */
+  async list(dto: MenuQueryDto): Promise<Pagination<MenuItemInfo>> {
+    // 1. 先查询所有符合条件的菜单数据（全量，不分页）
+    const queryBuilder: SelectQueryBuilder<MenuEntity> =
+      this.menuRepository.createQueryBuilder('menu')
+
+    // 添加查询条件（保持原始方式）
+    if (dto.name) {
+      queryBuilder.andWhere('menu.name LIKE :name', { name: `%${dto.name}%` })
+    }
+    if (dto.path) {
+      queryBuilder.andWhere('menu.path LIKE :path', { path: `%${dto.path}%` })
+    }
+    if (dto.permission) {
+      queryBuilder.andWhere('menu.permission LIKE :permission', {
+        permission: `%${dto.permission}%`
+      })
+    }
+    if (dto.component) {
+      queryBuilder.andWhere('menu.component LIKE :component', {
+        component: `%${dto.component}%`
+      })
+    }
+    if (dto.status !== undefined) {
+      queryBuilder.andWhere('menu.status = :status', { status: dto.status })
+    }
+
+    // 获取全量数据并排序
+    const allItems = await queryBuilder.orderBy('menu.orderNo', 'ASC').getMany()
+
+    // 2. 生成完整的树形结构（与原有全量查询完全一致）
+    const fullTree = generateMenu(allItems)
+    deleteEmptyChildren(fullTree)
+
+    // 3. 对树形结构的顶级节点进行分页
+    const page = dto.page || 1
+    const pageSize = dto.pageSize || 10
+    const totalItems = fullTree.length
+    const totalPages = Math.ceil(totalItems / pageSize)
+    const startIndex = (page - 1) * pageSize
+    const endIndex = startIndex + pageSize
+
+    // 截取当前页的顶级节点（子节点完整保留）
+    const currentPageItems = fullTree.slice(startIndex, endIndex)
+
+    // 4. 返回分页结果
+    return new Pagination(currentPageItems, {
+      totalItems,
+      itemCount: currentPageItems.length,
+      itemsPerPage: pageSize,
+      totalPages,
+      currentPage: page
+    })
+  }
+
+  /**
    * 获取所有菜单以及权限
    */
-  async list({ name, path, permission, component, status }: MenuQueryDto): Promise<MenuEntity[]> {
+  async listNoPage({
+    name,
+    path,
+    permission,
+    component,
+    status
+  }: MenuQueryDto): Promise<MenuEntity[]> {
     const menus = await this.menuRepository.find({
       where: {
         ...(name && { name: Like(`%${name}%`) }),
@@ -50,50 +114,6 @@ export class MenuService {
     }
 
     return []
-  }
-
-  async list2({
-    page,
-    pageSize,
-    name,
-    path,
-    permission,
-    component,
-    status
-  }: MenuQueryDto): Promise<Pagination<MenuEntity>> {
-    const queryBuilder = this.menuRepository.createQueryBuilder('menu')
-
-    const queryParams = {
-      name,
-      path,
-      permission,
-      component,
-      status
-    }
-
-    // 遍历查询参数对象，动态添加查询条件
-    Object.entries(queryParams).forEach(([key, value]) => {
-      if (isNil(value)) return
-
-      const [query, parameters] =
-        typeof value === 'string'
-          ? [`menu.${key} LIKE :${key}`, { [key]: `%${value}%` }]
-          : [`menu.${key} = :${key}`, { [key]: value }] // status 是 number
-
-      queryBuilder.andWhere(query, parameters)
-    })
-
-    queryBuilder.orderBy('menu.orderNo', 'ASC')
-
-    const { items, meta } = await paginate(queryBuilder, { page, pageSize })
-    const menuList = generateMenu(items)
-
-    if (!isEmpty(menuList)) {
-      deleteEmptyChildren(menuList)
-      return { items: menuList, meta }
-    } else {
-      return { items, meta }
-    }
   }
 
   async check(dto: Partial<MenuDto>): Promise<void | never> {

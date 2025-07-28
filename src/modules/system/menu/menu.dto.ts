@@ -99,6 +99,6 @@ export class MenuDto extends OperatorDto {
   component?: string
 }
 
-export class MenuQueryDto extends IntersectionType(PagerDto, PartialType(MenuDto)) {}
+export class MenuQueryDto extends IntersectionType(PagerDto<MenuDto>, PartialType(MenuDto)) {}
 
 export class MenuUpdateDto extends PartialType(MenuDto) {}
