@@ -228,6 +228,14 @@ export class UserService {
       .getOne()
   }
 
+  async exportAll(): Promise<UserEntity[]> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.dept', 'dept')
+      .leftJoinAndSelect('user.roles', 'role')
+      .getMany();
+  }
+
   /**
    * 查询用户列表
    */

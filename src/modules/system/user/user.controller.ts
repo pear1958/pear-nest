@@ -8,9 +8,12 @@ import {
   Delete,
   Param,
   ParseArrayPipe,
-  UseGuards
+  UseGuards,
+  Res
 } from '@nestjs/common'
 import { ApiOperation, ApiParam } from '@nestjs/swagger'
+import * as XLSX from 'xlsx'
+import type { FastifyReply } from 'fastify'
 import { UserService } from './user.service'
 import { UserDto, UserQueryDto, UserUpdateDto } from './dto/user.dto'
 import { ApiResult } from '@/common/decorator/api-result.decorator'
@@ -55,6 +58,44 @@ export class UserController {
   @Perm(permissions.LIST)
   async list(@Query() dto: UserQueryDto) {
     return this.userService.list(dto)
+  }
+
+  // 在 UserController 类中添加以下方法
+  @Get('export')
+  @ApiOperation({ summary: '导出所有用户列表为Excel' })
+  @Perm(permissions.LIST) // 复用列表权限
+  async exportUsers(@Res() reply: FastifyReply) {
+    // 使用 FastifyReply 类型  获取所有用户数据（不分页）
+    const allUsers = await this.userService.exportAll()
+
+    // 处理数据格式（根据实际实体字段调整）
+    const exportData = allUsers.map(user => ({
+      用户名: user.username,
+      昵称: user.nickname || '',
+      邮箱: user.email || '',
+      手机号: user.phone || '',
+      QQ: user.qq || '',
+      部门: user.dept?.name || '',
+      角色: user.roles.map(role => role.name).join(','),
+      状态: user.status === 1 ? '启用' : '禁用',
+      创建时间: new Date(user.createdAt).toLocaleString()
+    }))
+
+    // 创建工作簿和工作表
+    const worksheet = XLSX.utils.json_to_sheet(exportData)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, '用户列表')
+
+    // 生成Excel文件缓冲区
+    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' })
+    const fileName = `用户列表-${Date.now()}.xlsx`
+    const encodedFileName = encodeURIComponent(fileName) // 编码中文文件名
+
+    // Fastify 响应处理（与 Express 不同的核心部分）
+    reply
+      .header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+      .header('Content-Disposition', `attachment; filename*=UTF-8''${encodedFileName}`) // 使用编码后的文件名
+      .send(buffer)
   }
 
   @Post()
