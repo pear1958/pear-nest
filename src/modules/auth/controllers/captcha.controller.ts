@@ -28,7 +28,7 @@ export class CaptchaController {
       color: true, // 验证码的字符是否有颜色，默认没有，如果设定了背景，则默认有
       noise: 4, // 干扰线条的数量
       width: isEmpty(width) ? 100 : width,
-      height: isEmpty(height) ? 50 : height,
+      height: isEmpty(height) ? 38 : height,
       charPreset: '1234567890' // random character preset
     })
 
