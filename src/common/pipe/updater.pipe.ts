@@ -9,6 +9,7 @@ export class UpdaterPipe implements PipeTransform {
   transform(value: OperatorDto) {
     const user = this.request.user as AuthUser
     value.updateBy = user.uid
+    console.log('value', value)
     return value
   }
 }

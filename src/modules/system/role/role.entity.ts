@@ -1,11 +1,11 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'
 import { Column, Entity, JoinTable, ManyToMany, Relation } from 'typeorm'
-import { CommonEntity } from '@/common/entity/common.entity'
+import { CompleteEntity } from '@/common/entity/common.entity'
 import { MenuEntity } from '../menu/menu.entity'
 import { UserEntity } from '../user/user.entity'
 
 @Entity({ name: 'sys_role' })
-export class RoleEntity extends CommonEntity {
+export class RoleEntity extends CompleteEntity {
   @Column({ length: 50, unique: true })
   @ApiProperty({ description: '角色名' })
   name: string
