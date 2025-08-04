@@ -31,7 +31,7 @@ export class MenuService {
   /**
    * 获取分页菜单列表（确保数据完整，与全量查询结构一致）
    */
-  async list(dto: MenuQueryDto): Promise<Pagination<MenuItemInfo>> {
+  async list(dto: MenuQueryDto): Promise<Pagination<MenuItemInfo> | MenuEntity[]> {
     // 1. 先查询所有符合条件的菜单数据（全量，不分页）
     const queryBuilder: SelectQueryBuilder<MenuEntity> =
       this.menuRepository.createQueryBuilder('menu')

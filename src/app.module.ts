@@ -74,7 +74,7 @@ import { SseModule } from './modules/sse/sse.module'
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     // 接口操作权限守卫
     { provide: APP_GUARD, useClass: RbacGuard },
-    { provide: APP_GUARD, useClass: ThrottlerGuard }
+    // { provide: APP_GUARD, useClass: ThrottlerGuard }
   ]
 })
 export class AppModule {}

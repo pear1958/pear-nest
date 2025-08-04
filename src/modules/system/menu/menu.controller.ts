@@ -37,11 +37,19 @@ export class MenuController {
 
   // http://localhost:3000/api/system/menu/list?page=1&pageSize=5
   @Get('list')
-  @ApiOperation({ summary: '获取所有菜单列表' })
+  @ApiOperation({ summary: '获取菜单列表' })
   @ApiResult({ type: [MenuItemInfo] })
   @Perm(permissions.LIST)
   async list(@Query() dto: MenuQueryDto) {
     return this.menuService.list(dto)
+  }
+
+  @Get('all-list')
+  @ApiOperation({ summary: '获取所有菜单列表' })
+  @ApiResult({ type: [MenuItemInfo] })
+  @Perm(permissions.LIST)
+  async allList(@Query() dto: MenuUpdateDto) {
+    return this.menuService.listNoPage(dto)
   }
 
   @Get(':id')

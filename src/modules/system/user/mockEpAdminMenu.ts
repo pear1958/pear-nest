@@ -292,25 +292,25 @@ export const mockEpAdminMenuList = [
         ]
       },
       {
-        path: '/systemManage/user',
+        path: '/systemManage/userManage',
         name: 'systemManageUser',
-        component: '/systemManage/user/index',
+        component: '/systemManage/userManage/index',
         meta: {
           title: '用户管理'
         }
       },
       {
-        path: '/systemManage/role',
+        path: '/systemManage/roleManage',
         name: 'systemManageRole',
-        component: '/systemManage/role/index',
+        component: '/systemManage/roleManage/index',
         meta: {
           title: '角色管理'
         }
       },
       {
-        path: '/systemManage/menu',
+        path: '/systemManage/menuManage',
         name: 'systemManageMenu',
-        component: '/systemManage/menu/index',
+        component: '/systemManage/menuManage/index',
         meta: {
           title: '菜单管理'
         }
